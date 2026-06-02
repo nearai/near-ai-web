@@ -44,7 +44,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   if (!post || post.status !== "PUBLISHED" || (post.publishedAt && post.publishedAt > new Date())) notFound();
 
-  const categoryIds = post.categories.map((c) => c.id);
+  const categoryIds = post!.categories.map((c: { id: string }) => c.id);
   const related = await prisma.post.findMany({
     where: {
       id: { not: post.id },
