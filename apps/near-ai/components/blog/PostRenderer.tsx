@@ -31,7 +31,7 @@ export default function PostRenderer({ post, layout = "public" }: PostRendererPr
     ? { backgroundImage: `url(${post.heroBgImage})`, backgroundSize: "cover", backgroundPosition: "center" }
     : post.heroBgColor
       ? { backgroundColor: post.heroBgColor }
-      : { background: "linear-gradient(to bottom, #525252, #ffffff)" };
+      : { backgroundColor: "#cfcfcf" };
 
   const textColorClass = post.heroBgColor && !post.heroBgImage ? "text-foreground" : "text-white";
 

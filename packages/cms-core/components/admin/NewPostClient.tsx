@@ -53,7 +53,7 @@ export default function NewPostClient() {
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [publishedAt, setPublishedAt] = useState("");
   const [isCoverPickerOpen, setIsCoverPickerOpen] = useState(false);
-  const [heroBgColor, setHeroBgColor] = useState("#ffffff");
+  const [heroBgColor, setHeroBgColor] = useState("#cfcfcf");
   const [heroBgImage, setHeroBgImage] = useState("");
   const [isHeroBgPickerOpen, setIsHeroBgPickerOpen] = useState(false);
   const [isOgPickerOpen, setIsOgPickerOpen] = useState(false);
@@ -64,7 +64,7 @@ export default function NewPostClient() {
   const [draftRecovery, setDraftRecovery] = useState<{ savedAt: Date; draft: any } | null>(null);
   const autosaveStateRef = useRef({
     isDirty: false, title: "", content: {} as any, slug: "", excerpt: "",
-    coverImage: "", heroBgColor: "#ffffff", heroBgImage: "", seoTitle: "",
+    coverImage: "", heroBgColor: "#cfcfcf", heroBgImage: "", seoTitle: "",
     seoDesc: "", ogImage: "", publishedAt: "", selectedCategoryIds: [] as string[],
     selectedTagIds: [] as string[],
   });
@@ -141,7 +141,7 @@ export default function NewPostClient() {
     setSlug(d.slug || "");
     setExcerpt(d.excerpt || "");
     setCoverImage(d.coverImage || "");
-    setHeroBgColor(d.heroBgColor || "#ffffff");
+    setHeroBgColor(d.heroBgColor || "#cfcfcf");
     setHeroBgImage(d.heroBgImage || "");
     setSeoTitle(d.seoTitle || "");
     setSeoDesc(d.seoDesc || "");
@@ -402,11 +402,11 @@ export default function NewPostClient() {
                       <div className="flex items-center gap-2">
                         <div
                           className="w-8 h-8 rounded border border-border cursor-pointer overflow-hidden flex-shrink-0"
-                          style={{ backgroundColor: heroBgColor || "#ffffff" }}
+                          style={{ backgroundColor: heroBgColor || "#cfcfcf" }}
                         >
                           <input
                             type="color"
-                            value={heroBgColor || "#ffffff"}
+                            value={heroBgColor || "#cfcfcf"}
                             onChange={(e) => { setHeroBgColor(e.target.value); markDirty(); }}
                             className="opacity-0 w-full h-full cursor-pointer"
                             title="Pick hero background color"
@@ -417,14 +417,14 @@ export default function NewPostClient() {
                           value={heroBgColor}
                           onChange={(e) => { setHeroBgColor(e.target.value); markDirty(); }}
                           onBlur={(e) => setHeroBgColor(expandHexColor(e.target.value))}
-                          placeholder="#ffffff"
+                          placeholder="#cfcfcf"
                           maxLength={9}
                           className="text-xs font-mono flex-1 bg-transparent border border-border/70 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary/50 text-foreground"
                         />
-                        {heroBgColor !== "#ffffff" && (
+                        {heroBgColor !== "#cfcfcf" && (
                           <button
                             type="button"
-                            onClick={() => { setHeroBgColor("#ffffff"); markDirty(); }}
+                            onClick={() => { setHeroBgColor("#cfcfcf"); markDirty(); }}
                             className="text-muted-foreground hover:text-foreground transition"
                             title="Reset to white"
                           >
