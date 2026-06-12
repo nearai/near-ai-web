@@ -15,6 +15,8 @@ export interface RenderComponents {
     src: string;
     alt: string;
     title?: string;
+    width?: number;
+    height?: number;
     className?: string;
   }>;
   CarouselComponent?: React.ComponentType<{
@@ -24,8 +26,8 @@ export interface RenderComponents {
   }>;
 }
 
-function DefaultImage({ src, alt, title, className }: { src: string; alt: string; title?: string; className?: string }) {
-  return <img src={src} alt={alt} title={title} className={className} />;
+function DefaultImage({ src, alt, title, width, height, className }: { src: string; alt: string; title?: string; width?: number; height?: number; className?: string }) {
+  return <img src={src} alt={alt} title={title} width={width} height={height} className={className} />;
 }
 
 function DefaultCarousel({ images }: { images: Array<{ src: string; alt: string }> }) {
@@ -175,6 +177,8 @@ export function renderBlocks(
             src={node.attrs?.src}
             alt={node.attrs?.alt ?? ""}
             title={node.attrs?.title}
+            width={node.attrs?.width ?? undefined}
+            height={node.attrs?.height ?? undefined}
             className="rounded-lg max-w-full"
           />
         );
