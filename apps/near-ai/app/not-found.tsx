@@ -125,7 +125,14 @@ export default function NotFound() {
       // 4th click: vanish then gone
       setGhostPhase("vanishing");
       if (phaseTimerRef.current) clearTimeout(phaseTimerRef.current);
-      phaseTimerRef.current = setTimeout(() => setGhostPhase("gone"), 900);
+      phaseTimerRef.current = setTimeout(() => {
+        setGhostPhase("gone");
+        // reset back to idle after 6s so the egg can be triggered again
+        phaseTimerRef.current = setTimeout(() => {
+          setGhostPhase("idle");
+          clickCountRef.current = 0;
+        }, 6000);
+      }, 900);
     }
     // clicks 1 & 2: silent — no visual change
   }, [ghostPhase]);
@@ -215,10 +222,10 @@ export default function NotFound() {
       {ghostPhase === "gone" && (
         <div className="absolute top-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none" style={{ height: "50vh" }}>
           <span
-            className="top-msg font-sans font-bold text-white/[0.07] uppercase select-none text-center px-4"
-            style={{ fontSize: "clamp(2rem, 8vw, 6rem)", letterSpacing: "0.25em" }}
+            className="top-msg font-mono text-white/[0.06] uppercase select-none text-center px-4"
+            style={{ fontSize: "clamp(0.9rem, 2.5vw, 1.4rem)", letterSpacing: "0.35em" }}
           >
-            THIS PAGE WAS<br />NEVER HERE.
+            no signal detected.
           </span>
         </div>
       )}
