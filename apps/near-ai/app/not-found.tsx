@@ -220,10 +220,10 @@ export default function NotFound() {
 
       {/* EE#1 — big top message after ghost disappears */}
       {ghostPhase === "gone" && (
-        <div className="absolute top-0 left-0 right-0 z-20 flex items-end justify-center pointer-events-none" style={{ height: "50vh" }}>
+        <div className="absolute top-28 left-0 right-0 z-20 flex justify-center pointer-events-none">
           <span
-            className="top-msg font-mono text-white/[0.06] uppercase select-none text-center px-4"
-            style={{ fontSize: "clamp(0.9rem, 2.5vw, 1.4rem)", letterSpacing: "0.35em" }}
+            className="top-msg font-mono text-white/40 uppercase select-none text-center px-4"
+            style={{ fontSize: "clamp(0.75rem, 1.8vw, 1rem)", letterSpacing: "0.45em" }}
           >
             no signal detected.
           </span>
@@ -296,7 +296,7 @@ export default function NotFound() {
 
           {/* Attestation card */}
           <div className="mt-8 border border-white/10 rounded-lg px-6 py-4 text-left w-full max-w-sm">
-            <p className="font-mono text-[0.6rem] uppercase tracking-[0.25em] text-white/25 mb-2">IronClaw · Route Attestation</p>
+            <p className="font-mono text-[0.6rem] uppercase tracking-[0.25em] text-white/25 mb-2">NEAR AI · Route Attestation</p>
             <div className="space-y-1">
               <div className="flex justify-between font-mono text-[0.6rem] text-white/20">
                 <span>STATUS</span><span className="text-red-400/60">UNRESOLVED</span>
