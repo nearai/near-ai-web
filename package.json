@@ -5,6 +5,7 @@
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev --port 3001",
+    "postinstall": "prisma generate --schema=./packages/cms-core/prisma/schema.prisma",
     "build": "prisma generate --schema=./packages/cms-core/prisma/schema.prisma && next build",
     "start": "next start",
     "lint": "next lint",
