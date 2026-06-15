@@ -2,7 +2,7 @@ import { Feed } from "feed";
 import { prisma } from "@near/cms-core/lib/prisma";
 import { extractExcerpt } from "@near/cms-core/lib/excerpt";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const baseUrl = "https://near.ai";
