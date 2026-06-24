@@ -1,6 +1,9 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
+import { prisma } from "@near/cms-core/lib/prisma";
 
 const contactSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
@@ -24,6 +27,10 @@ export async function POST(req: Request) {
   }
 
   const { companyName, contactName, email, phone, solutionDescription, productCategory, timeZone } = parsed.data;
+
+  await (prisma as any).formSubmission.create({
+    data: { formId: "fde-contact", data: parsed.data },
+  });
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 

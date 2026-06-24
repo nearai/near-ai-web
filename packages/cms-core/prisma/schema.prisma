@@ -115,6 +115,17 @@ model InvitationToken {
   createdAt DateTime @default(now())
 }
 
+model FormSubmission {
+  id        String   @id @default(cuid())
+  formId    String
+  data      Json
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+
+  @@index([formId])
+  @@index([createdAt])
+}
+
 model AuditLog {
   id          String   @id @default(cuid())
   userId      String
