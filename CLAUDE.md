@@ -2,54 +2,44 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Monorepo Structure
+## Project Structure
 
-This is a **pnpm monorepo** with Turborepo. There are 3 apps sharing 1 CMS core package.
+This is a **pnpm workspace** with a standalone Next.js app at the root and a shared CMS package.
 
 ```
 /
-├── packages/
-│   └── cms-core/          ← Shared CMS engine (@near/cms-core)
-│       ├── components/admin/  — Admin UI (BlockEditor, sidebar, etc.)
-│       ├── components/ui/     — shadcn/ui primitives
-│       ├── lib/               — auth, prisma, email, utils, tiptap-renderer
-│       ├── pages/admin/       — Admin page implementations (re-exported by apps)
-│       ├── routes/api/        — API route handlers (re-exported by apps)
-│       ├── prisma/            — Schema + migrations (shared DB schema)
-│       ├── styles/            — admin.css (TipTap + dark mode editor styles)
-│       └── types/             — next-auth.d.ts type extensions
+├── app/                   ← near-ai Next.js app (App Router)
+│   ├── (site)/            — Public pages (home, blog, etc.)
+│   ├── admin/             — 1-line re-exports → cms-core/pages/admin/
+│   ├── api/               — 1-line re-exports → cms-core/routes/api/
+│   └── ...                — feed.xml, sitemap, robots, preview
 │
-└── apps/
-    ├── near-demo/         → near-demo.localhost (port 3000) — NEAR demo/org site
-    ├── near-ai/           → near-ai.localhost (port 3001)   — NEAR AI site
-    └── near-com/          → near-com.localhost (port 3002)  — NEAR .com site
+├── components/            — App-local components
+├── proxy.ts               — Auth protection for /admin/* (Next.js 16 middleware)
+│
+└── packages/
+    └── cms-core/          ← Shared CMS engine (@near/cms-core)
+        ├── components/admin/  — Admin UI (BlockEditor, sidebar, etc.)
+        ├── components/ui/     — shadcn/ui primitives
+        ├── lib/               — auth, prisma, email, utils, tiptap-renderer
+        ├── pages/admin/       — Admin page implementations
+        ├── routes/api/        — API route handlers
+        ├── prisma/            — Schema + migrations
+        ├── styles/            — admin.css (TipTap + dark mode editor styles)
+        └── types/             — next-auth.d.ts type extensions
 ```
-
-Each app has:
-- Its own `app/(site)/` — public pages (home, blog, etc.) — site-specific design
-- `app/admin/` — 1-line re-exports pointing to `cms-core/pages/admin/`
-- `app/api/` — 1-line re-exports pointing to `cms-core/routes/api/`
-- Its own `proxy.ts` — auth protection for `/admin/*`
-- Its own database via `DATABASE_URL` env var
 
 ## Quick Commands
 
 ```bash
-# Run a specific app (from repo root)
-pnpm --filter @near/near-demo run dev   # near-demo.localhost:3000
-pnpm --filter @near/near-ai run dev     # near-ai.localhost:3001
-pnpm --filter @near/near-com run dev    # near-com.localhost:3002
+# Dev (from repo root)
+pnpm dev                    # near-ai.localhost:3001
 
-# Run all apps simultaneously
-pnpm turbo run dev
-
-# With portless (from app directory)
-cd apps/near-demo && portless run next dev
-cd apps/near-ai && portless run next dev
+# With portless
+portless run next dev
 
 # Build
-pnpm turbo run build
-pnpm turbo run build --filter=@near/near-demo   # single app
+pnpm build
 
 # Database (Prisma lives in cms-core)
 pnpm --filter @near/cms-core run prisma:migrate  # create/apply migrations
@@ -64,7 +54,7 @@ pnpm --filter @near/cms-core run prisma:studio   # Prisma Studio
 | Layer | Stack |
 |-------|-------|
 | Framework | Next.js 16 (App Router, TypeScript) |
-| Monorepo | pnpm workspaces + Turborepo |
+| Workspace | pnpm workspaces (standalone app + cms-core package) |
 | Styling | Tailwind CSS v4 + shadcn/ui (new-york style) |
 | Database | PostgreSQL + Prisma ORM (schema in `packages/cms-core/prisma/`) |
 | Auth | NextAuth.js v5 (JWT + Credentials) |
@@ -74,7 +64,7 @@ pnpm --filter @near/cms-core run prisma:studio   # Prisma Studio
 
 ## Environment Variables
 
-Each app needs its own `.env.local` in its directory (e.g. `apps/near-demo/.env.local`):
+`.env.local` lives at the repo root:
 
 ```bash
 DATABASE_URL=           NEXTAUTH_URL=           AUTH_SECRET=
@@ -84,11 +74,10 @@ RESEND_API_KEY=
 AIRTABLE_API_KEY=       AIRTABLE_BASE_ID=       AIRTABLE_ECOSYSTEM_TABLE=
 ```
 
-Each app has its own `DATABASE_URL` pointing to its own PostgreSQL instance.
 
 ## Important Patterns
 
-**Route protection** — `proxy.ts` in each app guards `/admin/*` via `req.auth`. API routes call `await auth()` and return 401 if no session. (Note: previously `middleware.ts`, renamed to `proxy.ts` in Next.js 16.)
+**Route protection** — `proxy.ts` at the root guards `/admin/*` via `req.auth`. API routes call `await auth()` and return 401 if no session. (Note: previously `middleware.ts`, renamed to `proxy.ts` in Next.js 16.)
 
 **Database** — Always use the singleton from cms-core: `import { prisma } from '@near/cms-core/lib/prisma'`
 
@@ -108,26 +97,25 @@ import { auth } from "@cms/lib/auth";
 
 **Styling** — Public site: plain Tailwind light mode. Admin: dark mode via `.dark` class applied by `AdminThemeProvider`. Use semantic tokens (`bg-background`, `text-foreground`, etc.). Shared admin styles in `packages/cms-core/styles/admin.css`.
 
-**Tailwind @source** — Each app's `globals.css` must include `@source` pointing to cms-core so Tailwind scans shared components:
+**Tailwind @source** — `app/globals.css` must include `@source` pointing to cms-core so Tailwind scans shared components:
 ```css
-@source "../../../packages/cms-core/components/**/*.tsx";
-@source "../../../packages/cms-core/pages/**/*.tsx";
-@source "../../../packages/cms-core/routes/**/*.tsx";
+@source "../packages/cms-core/components/**/*.tsx";
+@source "../packages/cms-core/pages/**/*.tsx";
+@source "../packages/cms-core/routes/**/*.tsx";
 ```
 
 **Editor** — TipTap stores content as JSON. `packages/cms-core/components/admin/editor/BlockEditor.tsx` handles editing. `packages/cms-core/lib/tiptap-renderer.tsx` renders on public site (accepts `ImageComponent` and `CarouselComponent` via dependency injection).
 
 **ISR** — Blog index and post pages revalidate every 60s. On publish/update, `revalidatePath()` triggers immediately.
 
-**Re-export pattern** — Admin pages and API routes in each app are 1-line re-exports:
+**Re-export pattern** — Admin pages and API routes are 1-line re-exports into cms-core:
 ```typescript
-// apps/near-ai/app/admin/dashboard/page.tsx
+// app/admin/dashboard/page.tsx
 export { default } from "@near/cms-core/pages/admin/dashboard/page";
 
-// apps/near-ai/app/api/posts/route.ts
+// app/api/posts/route.ts
 export { GET, POST } from "@near/cms-core/routes/api/posts/route";
 ```
-Fix a bug in cms-core once → all 3 apps get it automatically.
 
 ## Database Schema (key models)
 
@@ -148,9 +136,8 @@ JWT strategy, 30-day sessions. Roles: **ADMIN** (full access) · **EDITOR** (own
 ## Incomplete Features
 
 - **Page Management** — DB model exists, admin UI is a stub
-- **near-demo public pages** — Most static stubs (Founders, Developers, Tech, etc.)
 - **Notification emails** — Only password reset email exists
 
 ---
 
-*Last updated: Phase 4 (Monorepo migration — pnpm workspaces + Turborepo + cms-core shared package)*
+*Last updated: Phase 5 (Standalone near-ai — single app at root + cms-core shared package)*
