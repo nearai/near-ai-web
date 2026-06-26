@@ -67,7 +67,6 @@ export default function GetInTouchModal() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [selectedChip, setSelectedChip] = useState("");
-  const [selectedTimezone, setSelectedTimezone] = useState("");
 
   function reset() {
     setStep(1);
@@ -347,7 +346,6 @@ export default function GetInTouchModal() {
                     value={form.timeZone ?? ""}
                     onChange={(e) => {
                       set("timeZone", e.target.value);
-                      setSelectedTimezone(e.target.value);
                     }}
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-700 outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 bg-white cursor-pointer"
                   >
