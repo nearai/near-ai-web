@@ -3,7 +3,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@cms/lib/auth";
 import { prisma } from "@cms/lib/prisma";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { createS3Client } from "@cms/lib/s3";
 
 export async function DELETE(request: NextRequest) {
   const session = await auth();
@@ -31,15 +32,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "No media found" }, { status: 404 });
     }
 
-    // Initialize S3 client
-    const s3Client = new S3Client({
-      region: process.env.S3_REGION || "auto",
-      endpoint: process.env.S3_ENDPOINT,
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
-      },
-    });
+    const s3Client = createS3Client();
 
     // Delete from S3 using Promise.allSettled for partial failure handling
     const r2PublicUrl = process.env.R2_PUBLIC_URL || "";
