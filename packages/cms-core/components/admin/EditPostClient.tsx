@@ -22,7 +22,9 @@ function toDatetimeLocalString(date: string | null | undefined): string {
   if (!date) return "";
   const d = new Date(date);
   if (isNaN(d.getTime())) return "";
-  return d.toISOString().slice(0, 16);
+  // Convert UTC → local time so the datetime-local input shows the user's timezone
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
 }
 
 function expandHexColor(color: string): string {
@@ -355,7 +357,7 @@ export default function EditPostClient({ userRole = "EDITOR" }: { userRole?: str
           tagIds: selectedTagIds,
           publishedAt: (() => {
             const now = new Date();
-            const parsedDate = publishedAt ? new Date(publishedAt + "Z") : null;
+            const parsedDate = publishedAt ? new Date(publishedAt) : null; // no "Z" → JS interprets as local time → correct UTC
             if (finalStatus === "PUBLISHED") {
               // If published date is in future, publish now instead
               return parsedDate && parsedDate > now ? now.toISOString() : (parsedDate ?? now).toISOString();
@@ -979,7 +981,7 @@ export default function EditPostClient({ userRole = "EDITOR" }: { userRole?: str
                     <Label htmlFor="publishedAt" className="text-xs font-semibold uppercase tracking-wide">
                       Publish Date
                     </Label>
-                    <span className="text-xs text-muted-foreground font-medium">Times are in UTC</span>
+                    <span className="text-xs text-muted-foreground font-medium">Your local time</span>
                   </div>
                   <input
                     id="publishedAt"
@@ -990,7 +992,7 @@ export default function EditPostClient({ userRole = "EDITOR" }: { userRole?: str
                   />
                   {publishedAt && (
                     <p className="text-xs text-blue-600 dark:text-blue-400 font-mono">
-                      {formatAdminDate(publishedAt + "Z")}
+                      = {formatAdminDate(new Date(publishedAt).toISOString())}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

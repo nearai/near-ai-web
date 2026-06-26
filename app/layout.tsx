@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { GeistSans } from "geist/font/sans";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -51,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${montreal.variable} ${montrealMono.variable} h-full antialiased`}
+      className={`${montreal.variable} ${montrealMono.variable} ${GeistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

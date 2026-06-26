@@ -195,8 +195,8 @@ export default function NewPostClient() {
           categoryIds: selectedCategoryIds,
           tagIds: selectedTagIds,
           publishedAt: finalStatus === "PUBLISHED"
-            ? (publishedAt ? new Date(publishedAt + "Z").toISOString() : new Date().toISOString())
-            : (publishedAt ? new Date(publishedAt + "Z").toISOString() : undefined),
+            ? (publishedAt ? new Date(publishedAt).toISOString() : new Date().toISOString()) // no "Z" → local → UTC
+            : (publishedAt ? new Date(publishedAt).toISOString() : undefined),
         }),
       });
 
@@ -663,7 +663,7 @@ export default function NewPostClient() {
                     <Label htmlFor="publishedAt" className="text-xs font-semibold uppercase tracking-wide">
                       Publish Date
                     </Label>
-                    <span className="text-xs text-muted-foreground font-medium">Times are in UTC</span>
+                    <span className="text-xs text-muted-foreground font-medium">Your local time</span>
                   </div>
                   <input
                     id="publishedAt"
@@ -674,7 +674,7 @@ export default function NewPostClient() {
                   />
                   {publishedAt && (
                     <p className="text-xs text-blue-600 dark:text-blue-400 font-mono">
-                      {formatAdminDate(publishedAt + "Z")}
+                      = {formatAdminDate(new Date(publishedAt).toISOString())}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">

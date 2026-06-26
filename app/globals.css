@@ -120,6 +120,12 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Geist font scoped to admin only — frontend keeps PP Neue Montreal */
+.admin-wrapper {
+  --font-sans: var(--font-geist-sans);
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

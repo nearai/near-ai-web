@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Settings, LogOut, ExternalLink, ChevronUp } from "lucide-react";
 import { LogoutConfirmationModal } from "@cms/components/admin/LogoutConfirmationModal";
+import { SidebarTooltip } from "@cms/components/admin/SidebarTooltip";
 
 interface SidebarProfileMenuProps {
   userName: string;
@@ -79,17 +80,18 @@ export function SidebarProfileMenu({ userName, role, collapsed = false }: Sideba
 
       {/* Collapsed: avatar only */}
       {collapsed ? (
-        <button
-          onClick={() => setOpen((v) => !v)}
-          title={userName || "Profile"}
-          className={`w-full flex justify-center p-1.5 rounded-xl border transition ${
-            open ? "bg-muted border-border" : "border-transparent hover:bg-muted/50 hover:border-border"
-          }`}
-        >
-          <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
-            {initials}
-          </div>
-        </button>
+        <SidebarTooltip label={<><span className="font-medium">{userName}</span><br /><span className="opacity-60 text-[10px]">{role}</span></>} collapsed>
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className={`w-full flex justify-center p-1.5 rounded-xl border transition ${
+              open ? "bg-muted border-border" : "border-transparent hover:bg-muted/50 hover:border-border"
+            }`}
+          >
+            <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
+              {initials}
+            </div>
+          </button>
+        </SidebarTooltip>
       ) : (
         /* Expanded: full card */
         <button

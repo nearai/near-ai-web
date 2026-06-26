@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@cms/components/admin/ThemeToggle";
 import { SidebarProfileMenu } from "@cms/components/admin/SidebarProfileMenu";
+import { SidebarClock } from "@cms/components/admin/SidebarClock";
+import { SidebarTooltip } from "@cms/components/admin/SidebarTooltip";
 import { useNavigationGuard } from "@cms/components/admin/NavigationGuardProvider";
 import { AdminTour } from "@cms/components/admin/onboarding/AdminTour";
 import { useOnboarding } from "@cms/components/admin/onboarding/useOnboarding";
@@ -56,27 +58,28 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
   const navLink = (href: string, label: string, icon: ReactNode, exact = false, tourId?: string) => {
     const active = exact ? pathname === href : pathname.startsWith(href);
     return (
-      <Link
-        href={href}
-        data-tour-id={tourId}
-        title={collapsed ? label : undefined}
-        onClick={(e) => {
-          if (isDirty) {
-            e.preventDefault();
-            requestNavigation(href);
-          }
-        }}
-        className={`flex items-center rounded-xl transition-all ${
-          collapsed ? "justify-center p-2" : "gap-3 px-3 py-2.5"
-        } ${
-          active
-            ? "bg-secondary text-secondary-foreground"
-            : "hover:bg-secondary/50 hover:text-secondary-foreground"
-        }`}
-      >
-        <span className="opacity-70">{icon}</span>
-        {!collapsed && <span>{label}</span>}
-      </Link>
+      <SidebarTooltip key={href} label={label} collapsed={collapsed}>
+        <Link
+          href={href}
+          data-tour-id={tourId}
+          onClick={(e) => {
+            if (isDirty) {
+              e.preventDefault();
+              requestNavigation(href);
+            }
+          }}
+          className={`flex items-center rounded-xl transition-all ${
+            collapsed ? "justify-center p-2" : "gap-3 px-3 py-2.5"
+          } ${
+            active
+              ? "bg-secondary text-secondary-foreground"
+              : "hover:bg-secondary/50 hover:text-secondary-foreground"
+          }`}
+        >
+          <span className="opacity-70">{icon}</span>
+          {!collapsed && <span>{label}</span>}
+        </Link>
+      </SidebarTooltip>
     );
   };
 
@@ -144,6 +147,7 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
 
         {/* Footer */}
         <div className={`border-t border-border space-y-3 ${collapsed ? "p-2" : "p-4"}`}>
+          <SidebarClock collapsed={collapsed} />
           <RestartTourButton collapsed={collapsed} />
           <ThemeToggle collapsed={collapsed} />
           <SidebarProfileMenu userName={userName} role={role} collapsed={collapsed} />
@@ -168,13 +172,14 @@ function RestartTourButton({ collapsed }: { collapsed: boolean }) {
 
   if (collapsed) {
     return (
-      <button
-        onClick={handleRestart}
-        title="Restart tour"
-        className="w-full p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition flex items-center justify-center"
-      >
-        <RotateCcw className="w-4 h-4" />
-      </button>
+      <SidebarTooltip label="Restart tour" collapsed>
+        <button
+          onClick={handleRestart}
+          className="w-full p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition flex items-center justify-center"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
+      </SidebarTooltip>
     );
   }
 
