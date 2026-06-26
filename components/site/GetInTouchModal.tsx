@@ -73,7 +73,6 @@ export default function GetInTouchModal() {
     setForm({ ...EMPTY });
     setErrors({});
     setSelectedChip("");
-    setSelectedTimezone("");
   }
 
   function handleOpenChange(val: boolean) {
