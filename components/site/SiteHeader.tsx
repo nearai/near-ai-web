@@ -1,4 +1,5 @@
 import Image from "next/image";
+import GetInTouchModal from "@/components/site/GetInTouchModal";
 
 export default function SiteHeader() {
   return (
@@ -9,6 +10,7 @@ export default function SiteHeader() {
       <div className="flex items-center gap-8">
         <a href="/blog" className="text-pretty hover:text-white transition-colors">BLOG</a>
         <a href="/company" className="text-pretty hover:text-white transition-colors">OUR COMPANY</a>
+        <GetInTouchModal />
       </div>
     </header>
   );

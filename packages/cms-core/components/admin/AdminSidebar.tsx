@@ -11,6 +11,7 @@ import {
   Tag,
   Users,
   Settings,
+  Inbox,
   PanelLeftClose,
   PanelLeftOpen,
   RotateCcw,
@@ -134,6 +135,7 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
           {role === "ADMIN" && (
             <>
               {sectionLabel("Management")}
+              {navLink("/admin/form-submissions", "Form Submissions", <Inbox className={iconSize} />, true)}
               {navLink("/admin/users", "Users", <Users className={iconSize} />, true)}
               {navLink("/admin/advanced", "Advanced", <Settings className={iconSize} />, true)}
             </>

@@ -7,7 +7,7 @@
     "dev": "next dev --port 3001",
     "postinstall": "prisma generate --schema=./packages/cms-core/prisma/schema.prisma",
     "build": "prisma generate --schema=./packages/cms-core/prisma/schema.prisma && next build",
-    "start": "next start",
+    "start": "prisma db push --schema=./packages/cms-core/prisma/schema.prisma --skip-generate && next start",
     "lint": "next lint",
     "prisma:migrate": "prisma migrate dev --schema=./packages/cms-core/prisma/schema.prisma",
     "prisma:seed": "node packages/cms-core/prisma/seed.ts",
