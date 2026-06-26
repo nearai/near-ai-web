@@ -12,7 +12,7 @@ const contactSchema = z.object({
   phone: z.string().optional(),
   solutionDescription: z.string().min(1, "Solution description is required"),
   productCategory: z.string().min(1, "Product/category is required"),
-  timeZone: z.string().min(1, "Time zone is required"),
+  timeZone: z.string().optional(),
 });
 
 export async function POST(req: Request) {

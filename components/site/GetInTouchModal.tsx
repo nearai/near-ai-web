@@ -22,7 +22,7 @@ const step1Schema = z.object({
 const step2Schema = z.object({
   solutionDescription: z.string().min(1, "Please describe your solution"),
   productCategory: z.string().min(1, "Please select a category"),
-  timeZone: z.string(),
+  timeZone: z.string().optional(),
 });
 
 const fullSchema = step1Schema.merge(step2Schema);
@@ -52,17 +52,14 @@ const EMPTY: ContactForm = {
 export default function GetInTouchModal() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
-  const [form, setForm] = useState<ContactForm>(() => ({
-    ...EMPTY,
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  }));
+  const [form, setForm] = useState<ContactForm>(() => ({ ...EMPTY }));
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [selectedChip, setSelectedChip] = useState("");
 
   function reset() {
     setStep(1);
-    setForm({ ...EMPTY, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    setForm({ ...EMPTY });
     setErrors({});
     setSelectedChip("");
   }
@@ -308,6 +305,16 @@ export default function GetInTouchModal() {
                     <p className="text-xs text-red-500">{errors.productCategory}</p>
                   )}
                 </div>
+
+                <Field label="Best time zone to contact" error={errors.timeZone}>
+                  <input
+                    type="text"
+                    value={form.timeZone ?? ""}
+                    onChange={(e) => set("timeZone", e.target.value)}
+                    placeholder="e.g. EST, PST, GMT+2"
+                    className={inputCls(false)}
+                  />
+                </Field>
 
                 <p className="text-xs text-gray-400">
                   We&apos;ll reach out to schedule a discovery call.
