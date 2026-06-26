@@ -45,11 +45,10 @@ export default async function AdminDashboard() {
   const ytdStart = new Date(new Date().getFullYear(), 0, 1);
   const heatmapStart = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
 
-  const [publishedCount, draftCount, archivedCount, pagesCount, usersCount] = await Promise.all([
+  const [publishedCount, draftCount, archivedCount, usersCount] = await Promise.all([
     prisma.post.count({ where: { status: "PUBLISHED" } }),
     prisma.post.count({ where: { status: "DRAFT" } }),
     prisma.post.count({ where: { status: "ARCHIVED" } }),
-    prisma.page.count(),
     prisma.user.count(),
   ]);
 
@@ -259,7 +258,7 @@ export default async function AdminDashboard() {
                         {post.title}
                       </Link>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {post.author?.name ?? "—"} · {post.publishedAt ? formatAdminDate(post.publishedAt) : "—"}
+                        {post.author?.name ?? "—"} · {post.publishedAt ? formatAdminDate(post.publishedAt.toISOString()) : "—"}
                       </p>
                     </div>
                     <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
