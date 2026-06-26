@@ -39,6 +39,18 @@ const CATEGORIES = [
   "Other",
 ];
 
+const TIMEZONES = [
+  "EST (UTC-5)",
+  "CST (UTC-6)",
+  "MST (UTC-7)",
+  "PST (UTC-8)",
+  "GMT / UTC",
+  "CET (UTC+1)",
+  "IST (UTC+5:30)",
+  "JST (UTC+9)",
+  "Other",
+];
+
 const EMPTY: ContactForm = {
   contactName: "",
   companyName: "",
@@ -56,12 +68,14 @@ export default function GetInTouchModal() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [selectedChip, setSelectedChip] = useState("");
+  const [selectedTimezone, setSelectedTimezone] = useState("");
 
   function reset() {
     setStep(1);
     setForm({ ...EMPTY });
     setErrors({});
     setSelectedChip("");
+    setSelectedTimezone("");
   }
 
   function handleOpenChange(val: boolean) {
@@ -306,15 +320,44 @@ export default function GetInTouchModal() {
                   )}
                 </div>
 
-                <Field label="Best time zone to contact" error={errors.timeZone}>
-                  <input
-                    type="text"
-                    value={form.timeZone ?? ""}
-                    onChange={(e) => set("timeZone", e.target.value)}
-                    placeholder="e.g. EST, PST, GMT+2"
-                    className={inputCls(false)}
-                  />
-                </Field>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-700">
+                    Best time zone to contact
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {TIMEZONES.map((tz) => (
+                      <button
+                        key={tz}
+                        type="button"
+                        onClick={() => {
+                          setSelectedTimezone(tz);
+                          if (tz !== "Other") {
+                            set("timeZone", tz);
+                          } else {
+                            set("timeZone", "");
+                          }
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                          selectedTimezone === tz
+                            ? "bg-black text-white border-black"
+                            : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                        }`}
+                      >
+                        {tz}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedTimezone === "Other" && (
+                    <input
+                      type="text"
+                      autoFocus
+                      value={form.timeZone ?? ""}
+                      onChange={(e) => set("timeZone", e.target.value)}
+                      placeholder="Enter your time zone"
+                      className={inputCls(false)}
+                    />
+                  )}
+                </div>
 
                 <p className="text-xs text-gray-400">
                   We&apos;ll reach out to schedule a discovery call.
