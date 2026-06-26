@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
+import { SidebarTooltip } from "@cms/components/admin/SidebarTooltip";
 
 function fmt(date: Date, tz: string) {
   return date.toLocaleTimeString("en-US", {
@@ -36,12 +37,11 @@ export function SidebarClock({ collapsed }: { collapsed: boolean }) {
 
   if (collapsed) {
     return (
-      <div
-        className="w-full p-2 rounded-lg flex items-center justify-center"
-        title={`${local} local (${offset})  ·  ${utc} UTC`}
-      >
-        <Clock className="w-4 h-4 text-muted-foreground" />
-      </div>
+      <SidebarTooltip label={<span className="tabular-nums">{local} <span className="opacity-60">{offset}</span><br />{utc} UTC</span>} collapsed>
+        <div className="w-full p-2 rounded-lg flex items-center justify-center">
+          <Clock className="w-4 h-4 text-muted-foreground" />
+        </div>
+      </SidebarTooltip>
     );
   }
 
