@@ -3,20 +3,12 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@cms/lib/auth";
+import { createS3Client } from "@cms/lib/s3";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
-
-const s3 = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
-  region: process.env.S3_REGION || "auto",
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-  },
-});
 
 const EXT_MAP: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -76,6 +68,7 @@ export async function POST(req: Request) {
   const key = `uploads/${crypto.randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
+  const s3 = createS3Client();
   await s3.send(
     new PutObjectCommand({
       Bucket: process.env.S3_BUCKET,

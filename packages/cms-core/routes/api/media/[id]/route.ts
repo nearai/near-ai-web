@@ -1,18 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@cms/lib/auth";
 import { prisma } from "@cms/lib/prisma";
-
-const s3 = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
-  region: process.env.S3_REGION || "auto",
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-  },
-});
+import { createS3Client } from "@cms/lib/s3";
 
 export async function PATCH(
   req: NextRequest,
@@ -58,6 +50,7 @@ export async function DELETE(
   }
 
   const key = media.url.replace(`${process.env.R2_PUBLIC_URL}/`, "");
+  const s3 = createS3Client();
   await s3.send(
     new DeleteObjectCommand({
       Bucket: process.env.S3_BUCKET,
