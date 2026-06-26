@@ -40,13 +40,12 @@ const CATEGORIES = [
 ];
 
 const TIMEZONES = [
-  "EST (UTC-5)",
-  "CST (UTC-6)",
-  "MST (UTC-7)",
   "PST (UTC-8)",
+  "MST (UTC-7)",
+  "CST (UTC-6)",
+  "EST (UTC-5)",
   "GMT / UTC",
   "CET (UTC+1)",
-  "IST (UTC+5:30)",
   "JST (UTC+9)",
   "Other",
 ];
@@ -221,7 +220,7 @@ export default function GetInTouchModal() {
               }}
             >
               {/* ── Step 1: Who are you ── */}
-              <div className="px-6 pt-5 pb-6 space-y-4" style={{ width: "50%" }}>
+              <div className="px-6 pt-5 pb-4 space-y-4" style={{ width: "50%" }}>
                 <div>
                   <p className="text-base text-gray-400">
                     Tell us who you are and we&apos;ll take it from there.
@@ -267,14 +266,6 @@ export default function GetInTouchModal() {
                     className={inputCls(false)}
                   />
                 </Field>
-
-                <button
-                  type="button"
-                  onClick={handleContinue}
-                  className="w-full bg-black text-white py-2.5 rounded-lg text-base font-medium hover:bg-black/85 transition-colors cursor-pointer"
-                >
-                  Tell us about your project →
-                </button>
               </div>
 
               {/* ── Step 2: What are you building ── */}
@@ -299,7 +290,7 @@ export default function GetInTouchModal() {
                     value={form.solutionDescription}
                     onChange={(e) => set("solutionDescription", e.target.value)}
                     placeholder=""
-                    rows={3}
+                    rows={2}
                     className={inputCls(!!errors.solutionDescription)}
                   />
                 </Field>
@@ -352,30 +343,21 @@ export default function GetInTouchModal() {
                   <label className="text-base font-medium text-gray-700">
                     Best time zone to contact
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {TIMEZONES.map((tz) => (
-                      <button
-                        key={tz}
-                        type="button"
-                        onClick={() => {
-                          setSelectedTimezone(tz);
-                          if (tz !== "Other") {
-                            set("timeZone", tz);
-                          } else {
-                            set("timeZone", "");
-                          }
-                        }}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
-                          selectedTimezone === tz
-                            ? "bg-black text-white border-black"
-                            : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
-                        }`}
-                      >
-                        {tz}
-                      </button>
+                  <select
+                    value={form.timeZone ?? ""}
+                    onChange={(e) => {
+                      set("timeZone", e.target.value);
+                      setSelectedTimezone(e.target.value);
+                    }}
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-700 outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400 bg-white cursor-pointer"
+                  >
+                    <option value="">Select a time zone…</option>
+                    {TIMEZONES.filter((tz) => tz !== "Other").map((tz) => (
+                      <option key={tz} value={tz}>{tz}</option>
                     ))}
-                  </div>
-                  {selectedTimezone === "Other" && (
+                    <option value="Other">Other</option>
+                  </select>
+                  {form.timeZone === "Other" && (
                     <input
                       type="text"
                       autoFocus
@@ -387,28 +369,38 @@ export default function GetInTouchModal() {
                   )}
                 </div>
 
-                <p className="text-base text-gray-400">
-                  We&apos;ll reach out to schedule a discovery call.
-                </p>
-
-                <div className="flex gap-3 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-lg text-base font-medium hover:border-gray-400 transition-colors cursor-pointer"
-                  >
-                    ← Back
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="flex-[2] bg-black text-white py-2.5 rounded-lg text-base font-medium hover:bg-black/85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {submitting ? "Sending..." : "Request a Discovery Call"}
-                  </button>
-                </div>
               </div>
             </div>
+          </div>
+
+          {/* Buttons — always pinned to bottom of the card */}
+          <div className="px-6 pb-6">
+            {step === 1 ? (
+              <button
+                type="button"
+                onClick={handleContinue}
+                className="w-full bg-black text-white py-2.5 rounded-lg text-base font-medium hover:bg-black/85 transition-colors cursor-pointer"
+              >
+                Tell us about your project →
+              </button>
+            ) : (
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-lg text-base font-medium hover:border-gray-400 transition-colors cursor-pointer"
+                >
+                  ← Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-[2] bg-black text-white py-2.5 rounded-lg text-base font-medium hover:bg-black/85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitting ? "Sending..." : "Request a Discovery Call"}
+                </button>
+              </div>
+            )}
           </div>
         </form>
       </DialogContent>
