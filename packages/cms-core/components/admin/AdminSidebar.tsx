@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@cms/components/admin/ThemeToggle";
 import { SidebarProfileMenu } from "@cms/components/admin/SidebarProfileMenu";
+import { SidebarClock } from "@cms/components/admin/SidebarClock";
 import { useNavigationGuard } from "@cms/components/admin/NavigationGuardProvider";
 import { AdminTour } from "@cms/components/admin/onboarding/AdminTour";
 import { useOnboarding } from "@cms/components/admin/onboarding/useOnboarding";
@@ -144,6 +145,7 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
 
         {/* Footer */}
         <div className={`border-t border-border space-y-3 ${collapsed ? "p-2" : "p-4"}`}>
+          <SidebarClock collapsed={collapsed} />
           <RestartTourButton collapsed={collapsed} />
           <ThemeToggle collapsed={collapsed} />
           <SidebarProfileMenu userName={userName} role={role} collapsed={collapsed} />

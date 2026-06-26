@@ -254,13 +254,13 @@ export function PostsBulkTable({ posts, userRole, sort = "createdAt", order = "d
                 <td className="px-6 py-3">
                   <div className="flex items-center justify-end gap-1" data-posts-tour-id="post-actions">
                     {post.status === "PUBLISHED" && (
-                      <Button asChild variant="ghost" size="icon" className="h-8 w-8" title="View on site">
+                      <Button asChild variant="ghost" size="icon" className="h-8 w-8 opacity-70 hover:opacity-100 hover:bg-muted" title="View on site">
                         <Link href={`/blog/${post.slug}`} target="_blank">
                           <Eye className="w-4 h-4" />
                         </Link>
                       </Button>
                     )}
-                    <Button asChild variant="ghost" size="icon" className="h-8 w-8" title="Edit post">
+                    <Button asChild variant="ghost" size="icon" className="h-8 w-8 opacity-70 hover:opacity-100 hover:bg-muted" title="Edit post">
                       <Link href={`/admin/posts/${post.id}/edit`}>
                         <Pencil className="w-4 h-4" />
                       </Link>

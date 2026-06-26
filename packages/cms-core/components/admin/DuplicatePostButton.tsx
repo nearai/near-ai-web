@@ -31,7 +31,7 @@ export function DuplicatePostButton({ postId }: { postId: string }) {
       type="button"
       onClick={handleDuplicate}
       disabled={isDuplicating}
-      className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-border text-muted-foreground hover:bg-muted transition disabled:opacity-50"
+      className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground opacity-70 hover:opacity-100 hover:bg-muted transition disabled:opacity-50"
       title="Duplicate post"
     >
       <Copy className="w-4 h-4" />

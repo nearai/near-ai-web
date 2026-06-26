@@ -52,7 +52,7 @@ export function PostDeleteButton({
       <button
         type="button"
         onClick={() => setShowModal(true)}
-        className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-destructive text-destructive hover:bg-destructive/10 transition"
+        className="inline-flex items-center justify-center w-8 h-8 rounded-md text-destructive opacity-70 hover:opacity-100 hover:bg-destructive/10 transition"
         title="Delete post"
       >
         <Trash2 className="w-4 h-4" />
