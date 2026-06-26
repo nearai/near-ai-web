@@ -116,7 +116,7 @@ export default function GetInTouchModal() {
         const data = (await res.json()) as { error?: string };
         throw new Error(data.error ?? "Something went wrong");
       }
-      toast.success("We'll be in touch within 24 hours.");
+      toast.success("We'll be in touch soon.");
       setOpen(false);
       reset();
     } catch (err) {
@@ -310,7 +310,7 @@ export default function GetInTouchModal() {
                 </div>
 
                 <p className="text-xs text-gray-400">
-                  We&apos;ll reach out within 24 hours to schedule a discovery call.
+                  We&apos;ll reach out to schedule a discovery call.
                 </p>
 
                 <div className="flex gap-3 pt-1">
