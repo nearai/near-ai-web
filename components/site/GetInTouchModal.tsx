@@ -152,30 +152,62 @@ export default function GetInTouchModal() {
       <DialogContent
         showCloseButton={false}
         onInteractOutside={(e) => e.preventDefault()}
-        className="sm:max-w-md bg-white text-gray-900 overflow-hidden p-0 gap-0"
+        className="sm:max-w-md bg-white text-gray-900 overflow-hidden p-0 gap-0 rounded-2xl"
       >
         <DialogTitle className="sr-only">
           Get In Touch With The NEAR Forward Deployed Team
         </DialogTitle>
 
-        {/* Progress bar + close */}
-        <div className="flex items-center gap-3 px-6 pt-5">
-          <div className="flex gap-1.5 flex-1">
-            <div className="h-1 flex-1 rounded-full bg-black" />
-            <div
-              className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                step === 2 ? "bg-black" : "bg-gray-200"
-              }`}
-            />
+        {/* Header — 4 layers */}
+        <div className="relative overflow-hidden min-h-[156px] flex flex-col justify-between p-5 bg-[#1d2e42] mx-3 mt-3 rounded-lg">
+
+          {/* Layer 1: Blue gradient base */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1d2e42] via-[#26405c] to-[#334f6a]" />
+
+          {/* Layer 2: Noise with blur */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
+              backgroundSize: '200px 200px',
+              filter: 'blur(0.6px)',
+            }}
+          />
+
+          {/* Layer 3: Hero image blended over blue */}
+          <img
+            src="/demo-v1/background-1.webp"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-40 mix-blend-overlay"
+          />
+
+          {/* Layer 4: Dark gradient for text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/80" />
+
+          {/* Progress + close */}
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="flex gap-1.5 flex-1">
+              <div className="h-0.5 flex-1 rounded-full bg-white/80" />
+              <div className={`h-0.5 flex-1 rounded-full transition-colors duration-300 ${
+                step === 2 ? "bg-white/80" : "bg-white/25"
+              }`} />
+            </div>
+            <DialogClose asChild>
+              <button
+                type="button"
+                className="bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white transition-colors p-1.5 rounded-lg cursor-pointer"
+              >
+                <XIcon className="w-4 h-4" />
+              </button>
+            </DialogClose>
           </div>
-          <DialogClose asChild>
-            <button
-              type="button"
-              className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer p-1.5 -mr-1.5 rounded-md hover:bg-gray-100"
-            >
-              <XIcon className="w-5 h-5" />
-            </button>
-          </DialogClose>
+
+          {/* Dynamic title */}
+          <div className="relative z-10">
+            <h2 className="text-white font-bold text-2xl leading-snug text-balance">
+              Get In Touch With The NEAR Forward Deployed Team
+            </h2>
+          </div>
         </div>
 
         {/* Sliding steps */}
@@ -191,8 +223,7 @@ export default function GetInTouchModal() {
               {/* ── Step 1: Who are you ── */}
               <div className="px-6 pt-5 pb-6 space-y-4" style={{ width: "50%" }}>
                 <div>
-                  <h2 className="text-lg font-semibold">Get In Touch With The NEAR Forward Deployed Team</h2>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-base text-gray-400">
                     Tell us who you are and we&apos;ll take it from there.
                   </p>
                 </div>
@@ -240,7 +271,7 @@ export default function GetInTouchModal() {
                 <button
                   type="button"
                   onClick={handleContinue}
-                  className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-black/85 transition-colors cursor-pointer"
+                  className="w-full bg-black text-white py-2.5 rounded-lg text-base font-medium hover:bg-black/85 transition-colors cursor-pointer"
                 >
                   Tell us about your project →
                 </button>
@@ -250,14 +281,11 @@ export default function GetInTouchModal() {
               <div className="px-6 pt-5 pb-6 space-y-4" style={{ width: "50%" }}>
                 <div>
                   {firstName && (
-                    <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mb-1">
+                    <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-1">
                       Hi, {firstName}
                     </p>
                   )}
-                  <h2 className="text-lg font-semibold">
-                    Now, tell us what you&apos;re building
-                  </h2>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-base text-gray-400 mt-1">
                     The more context you share, the better we can prepare.
                   </p>
                 </div>
@@ -278,7 +306,7 @@ export default function GetInTouchModal() {
 
                 {/* Category chips */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-base font-medium text-gray-700">
                     What best describes your project?
                     <span className="text-red-500 ml-0.5">*</span>
                   </label>
@@ -295,7 +323,7 @@ export default function GetInTouchModal() {
                             set("productCategory", "");
                           }
                         }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
                           selectedChip === cat
                             ? "bg-black text-white border-black"
                             : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
@@ -316,12 +344,12 @@ export default function GetInTouchModal() {
                     />
                   )}
                   {errors.productCategory && (
-                    <p className="text-xs text-red-500">{errors.productCategory}</p>
+                    <p className="text-sm text-red-500">{errors.productCategory}</p>
                   )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-base font-medium text-gray-700">
                     Best time zone to contact
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -337,7 +365,7 @@ export default function GetInTouchModal() {
                             set("timeZone", "");
                           }
                         }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
                           selectedTimezone === tz
                             ? "bg-black text-white border-black"
                             : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
@@ -359,7 +387,7 @@ export default function GetInTouchModal() {
                   )}
                 </div>
 
-                <p className="text-xs text-gray-400">
+                <p className="text-base text-gray-400">
                   We&apos;ll reach out to schedule a discovery call.
                 </p>
 
@@ -367,14 +395,14 @@ export default function GetInTouchModal() {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-lg text-sm font-medium hover:border-gray-400 transition-colors cursor-pointer"
+                    className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-lg text-base font-medium hover:border-gray-400 transition-colors cursor-pointer"
                   >
                     ← Back
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-[2] bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-black/85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-[2] bg-black text-white py-2.5 rounded-lg text-base font-medium hover:bg-black/85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? "Sending..." : "Request a Discovery Call"}
                   </button>
@@ -390,7 +418,7 @@ export default function GetInTouchModal() {
 
 function inputCls(hasError: boolean) {
   return [
-    "w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors",
+    "w-full rounded-lg border px-3 py-2 text-base outline-none transition-colors",
     "focus:ring-2 focus:ring-black/10 focus:border-gray-400",
     hasError
       ? "border-red-400 bg-red-50 focus:ring-red-200"
@@ -411,12 +439,12 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">
+      <label className="text-base font-medium text-gray-700">
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }
