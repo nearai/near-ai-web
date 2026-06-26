@@ -102,7 +102,7 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
         {collapsed ? (
           /* Collapsed: icon centered, toggle below */
           <div className="flex flex-col items-center border-b border-border py-3 gap-2">
-            <img src="/icon.svg" alt="NEAR" className="h-7 w-auto dark:invert" />
+            <img src="/Near-logo-w.png" alt="NEAR" className="h-5 w-auto" />
             <button
               onClick={() => setCollapsed((v) => !v)}
               title="Expand sidebar"
@@ -114,7 +114,7 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
         ) : (
           /* Expanded: logo + toggle in same row */
           <div className="flex items-center justify-between px-6 border-b border-border h-[73px]">
-            <img src="/logo.svg" alt="NEAR CMS" className="h-7 w-auto dark:invert" />
+            <img src="/near-ai.png" alt="NEAR AI" className="h-5 w-auto" />
             <button
               onClick={() => setCollapsed((v) => !v)}
               title="Collapse sidebar"
