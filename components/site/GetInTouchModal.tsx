@@ -180,7 +180,7 @@ export default function GetInTouchModal() {
               {/* ── Step 1: Who are you ── */}
               <div className="px-6 pt-5 pb-6 space-y-4" style={{ width: "50%" }}>
                 <div>
-                  <h2 className="text-lg font-semibold">Let&apos;s get acquainted</h2>
+                  <h2 className="text-lg font-semibold">Get In Touch With The NEAR Forward Deployed Team</h2>
                   <p className="text-sm text-gray-400 mt-1">
                     Tell us who you are and we&apos;ll take it from there.
                   </p>
@@ -206,7 +206,7 @@ export default function GetInTouchModal() {
                   />
                 </Field>
 
-                <Field label="Work Email" error={errors.email} required>
+                <Field label="Email" error={errors.email} required>
                   <input
                     type="email"
                     value={form.email}
