@@ -13,6 +13,7 @@ import {
   ImageIcon, Loader2, CheckCircle2, UploadCloud,
   AlertTriangle, Search, X, CircleAlert,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useAdminTheme } from "@cms/components/admin/ThemeProvider";
 
 interface MediaItem {
@@ -136,8 +137,15 @@ export default function MediaPickerModal({
     setIsProcessing(true);
     const pending = queue.filter((i) => i.status === "pending");
     let lastUrl: string | null = null;
+    let successCount = 0;
+    let errorCount = 0;
 
-    for (const item of pending) {
+    const toastId = toast.loading(`Uploading 0 / ${pending.length}…`);
+
+    for (let idx = 0; idx < pending.length; idx++) {
+      const item = pending[idx];
+      toast.loading(`Uploading ${idx + 1} / ${pending.length}…`, { id: toastId });
+
       setQueue((prev) =>
         prev.map((i) => i.id === item.id ? { ...i, status: "uploading" } : i)
       );
@@ -148,15 +156,20 @@ export default function MediaPickerModal({
         if (res.ok) {
           const { url } = await res.json();
           lastUrl = url;
+          successCount++;
           setQueue((prev) =>
             prev.map((i) => i.id === item.id ? { ...i, status: "done" } : i)
           );
         } else {
+          errorCount++;
+          toast.error(`Failed to upload "${item.file.name}"`);
           setQueue((prev) =>
             prev.map((i) => i.id === item.id ? { ...i, status: "error" } : i)
           );
         }
       } catch {
+        errorCount++;
+        toast.error(`Failed to upload "${item.file.name}"`);
         setQueue((prev) =>
           prev.map((i) => i.id === item.id ? { ...i, status: "error" } : i)
         );
@@ -167,6 +180,15 @@ export default function MediaPickerModal({
     if (lastUrl) setSelected(lastUrl);
     setIsProcessing(false);
     setAllDone(true);
+
+    if (errorCount === 0) {
+      toast.success(`${successCount} image${successCount !== 1 ? "s" : ""} uploaded`, { id: toastId });
+    } else if (successCount === 0) {
+      toast.error(`All uploads failed`, { id: toastId });
+    } else {
+      toast.warning(`${successCount} uploaded, ${errorCount} failed`, { id: toastId });
+    }
+
     setTimeout(() => {
       setAllDone(false);
       setQueue([]);
@@ -346,6 +368,22 @@ export default function MediaPickerModal({
                         </a>{" "}
                         first.
                       </span>
+                    </div>
+                  )}
+
+                  {/* Progress bar during upload */}
+                  {isProcessing && (
+                    <div className="space-y-1 flex-shrink-0">
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Uploading…</span>
+                        <span className="tabular-nums">{doneCount} / {queue.length}</span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-300"
+                          style={{ width: `${queue.length > 0 ? (doneCount / queue.length) * 100 : 0}%` }}
+                        />
+                      </div>
                     </div>
                   )}
 
