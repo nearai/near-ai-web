@@ -354,6 +354,8 @@ export default function MediaPage() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
           onClick={closeUploadModal}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => e.preventDefault()}
         >
           <div
             className="relative bg-background border border-border rounded-2xl shadow-xl w-full max-w-3xl mx-4"
