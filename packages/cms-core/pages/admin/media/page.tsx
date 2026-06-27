@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@cms/components/ui/button";
-import { Image, AlertTriangle, Search } from "lucide-react";
+import { Image, AlertTriangle, Search, Loader2, CheckCircle2, CircleAlert } from "lucide-react";
+import { toast } from "sonner";
 
 interface MediaItem {
   id: string;
@@ -29,6 +30,7 @@ export default function MediaPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [oversizedFiles, setOversizedFiles] = useState<File[]>([]);
+  const [uploadQueue, setUploadQueue] = useState<{ name: string; status: "pending" | "uploading" | "done" | "error" }[]>([]);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -58,9 +60,11 @@ export default function MediaPage() {
   }, [search, typeFilter]);
 
   function closeUploadModal() {
+    if (isUploading) return; // prevent closing mid-upload
     setShowUploadModal(false);
     setOversizedFiles([]);
     setDragOver(false);
+    setUploadQueue([]);
   }
 
   function handleFilesSelected(files: File[]) {
@@ -77,19 +81,43 @@ export default function MediaPage() {
     }
   }
 
-  async function handleUpload(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-    await fetch("/api/upload", { method: "POST", body: formData });
-  }
-
   async function handleUploadMany(files: File[]) {
     setIsUploading(true);
-    try {
-      await Promise.all(files.map((f) => handleUpload(f)));
-      await fetchMedia(1);
-    } finally {
-      setIsUploading(false);
+    setUploadQueue(files.map((f) => ({ name: f.name, status: "pending" })));
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadQueue((prev) => prev.map((q, idx) => idx === i ? { ...q, status: "uploading" } : q));
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        if (res.ok) {
+          successCount++;
+          setUploadQueue((prev) => prev.map((q, idx) => idx === i ? { ...q, status: "done" } : q));
+        } else {
+          errorCount++;
+          setUploadQueue((prev) => prev.map((q, idx) => idx === i ? { ...q, status: "error" } : q));
+        }
+      } catch {
+        errorCount++;
+        setUploadQueue((prev) => prev.map((q, idx) => idx === i ? { ...q, status: "error" } : q));
+      }
+    }
+
+    await fetchMedia(1);
+    setIsUploading(false);
+
+    if (errorCount === 0) {
+      toast.success(`${successCount} image${successCount !== 1 ? "s" : ""} uploaded`);
+      closeUploadModal();
+    } else if (successCount === 0) {
+      toast.error("All uploads failed. Check your connection and try again.");
+    } else {
+      toast.warning(`${successCount} uploaded, ${errorCount} failed`);
     }
   }
 
@@ -345,7 +373,46 @@ export default function MediaPage() {
 
             {/* Body */}
             <div className="p-6">
-              {oversizedFiles.length > 0 ? (
+              {/* Upload progress view */}
+              {isUploading && uploadQueue.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Uploading…</span>
+                      <span className="tabular-nums">
+                        {uploadQueue.filter((q) => q.status === "done" || q.status === "error").length} / {uploadQueue.length}
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-300"
+                        style={{
+                          width: `${(uploadQueue.filter((q) => q.status === "done" || q.status === "error").length / uploadQueue.length) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2 max-h-72 overflow-y-auto">
+                    {uploadQueue.map((item, i) => (
+                      <div
+                        key={i}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg border text-sm ${
+                          item.status === "done"      ? "border-green-500/30 bg-green-500/5"
+                          : item.status === "error"   ? "border-destructive/30 bg-destructive/5"
+                          : item.status === "uploading" ? "border-primary/40 bg-primary/5"
+                          : "border-border bg-muted/20"
+                        }`}
+                      >
+                        {item.status === "uploading" && <Loader2 className="w-4 h-4 animate-spin text-primary shrink-0" />}
+                        {item.status === "done"      && <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />}
+                        {item.status === "error"     && <CircleAlert className="w-4 h-4 text-destructive shrink-0" />}
+                        {item.status === "pending"   && <div className="w-4 h-4 rounded-full border-2 border-border shrink-0" />}
+                        <span className="truncate text-foreground/80">{item.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : oversizedFiles.length > 0 ? (
                 /* Warning view */
                 <div className="space-y-5">
                   <div className="flex gap-3">
