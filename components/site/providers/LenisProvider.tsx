@@ -2,13 +2,20 @@
 
 import Lenis from "lenis";
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   useEffect(() => {
+    // Blog pages don't use GSAP/ScrollTrigger animations and have long dynamic
+    // content that causes Lenis's virtual scroll limit to desync mid-scroll.
+    if (pathname.startsWith("/blog")) return;
+
     const lenis = new Lenis();
 
     lenis.on("scroll", ScrollTrigger.update);
@@ -54,7 +61,7 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
       clearTimeout(resizeTimer);
       window.removeEventListener("load", onLoad);
     };
-  }, []);
+  }, [pathname]);
 
   return <>{children}</>;
 }
