@@ -26,11 +26,12 @@ export default async function CategoryPage({ params, searchParams }: {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? 1));
   const skip = (page - 1) * PAGE_SIZE;
+  const now = new Date();
 
   const category = await prisma.category.findUnique({ where: { slug } });
   if (!category) notFound();
 
-  const where = { status: "PUBLISHED" as const, categories: { some: { slug } } };
+  const where = { status: "PUBLISHED" as const, publishedAt: { lte: now }, categories: { some: { slug } } };
   const [posts, total] = await Promise.all([
     prisma.post.findMany({
       where, orderBy: { publishedAt: "desc" }, take: PAGE_SIZE, skip,

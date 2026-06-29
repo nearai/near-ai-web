@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export async function generateStaticParams() {
   try {
     const posts = await prisma.post.findMany({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", publishedAt: { lte: new Date() } },
       select: { slug: true },
     });
     return posts.map((p: { slug: string }) => ({ slug: p.slug }));
@@ -43,13 +43,14 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     include: { author: true, categories: true, tags: true },
   });
 
-  if (!post || post.status !== "PUBLISHED") notFound();
+  if (!post || post.status !== "PUBLISHED" || (post.publishedAt && post.publishedAt > new Date())) notFound();
 
   const categoryIds = post!.categories.map((c: { id: string }) => c.id);
   const related = await prisma.post.findMany({
     where: {
       id: { not: post.id },
       status: "PUBLISHED",
+      publishedAt: { lte: new Date() },
       ...(categoryIds.length > 0 && { categories: { some: { id: { in: categoryIds } } } }),
     },
     include: { author: true },
