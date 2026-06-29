@@ -133,73 +133,9 @@ export default async function BlogIndex({
           </div>
         ) : (
           <>
-            {/* FEATURED — Editorial 30/70 */}
-            {page === 1 && !q && !category && posts[0] && (() => {
-              const featured = posts[0];
-              const excerpt = featured.excerpt || extractExcerpt(featured.content);
-              return (
-                <Link href={`/blog/${featured.slug}`} className="group block mb-12">
-                  <article className="flex flex-col sm:flex-row rounded-[2rem] overflow-hidden border border-[#CAC8C8] hover:shadow-xl transition-shadow duration-300 min-h-[480px]">
-
-                    {/* IMAGE — 60% */}
-                    <div className="relative w-full sm:w-[60%] shrink-0 aspect-[16/9] sm:aspect-auto bg-[#CAC8C8]">
-                      <Image
-                        src={featured.coverImage ?? "/blog-gen-background.jpg"}
-                        alt={featured.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                        sizes="(max-width: 640px) 100vw, 30vw"
-                      />
-                    </div>
-
-                    {/* CONTENT — 70%, separated by a thin line */}
-                    <div className="flex flex-col flex-1 bg-[#ECECEC] border-t sm:border-t-0 sm:border-l border-[#CAC8C8] px-8 lg:px-12 py-8 lg:py-10">
-
-                      {/* Top label row */}
-                      <div className="flex items-center gap-3 mb-6">
-                        <span className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-[#5A5A5A]">Featured</span>
-                        <span className="font-mono text-[0.65rem] text-[#CAC8C8]">·</span>
-                        <span className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-[#CAC8C8]">01</span>
-                        {featured.categories[0] && (
-                          <>
-                            <span className="font-mono text-[0.65rem] text-[#CAC8C8]">·</span>
-                            <span className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-[#CAC8C8]">{featured.categories[0].name}</span>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Title */}
-                      <h2
-                        className="font-medium leading-[1.1] tracking-tight text-[#101010] group-hover:text-[#525252] transition-colors mb-5"
-                        style={{ fontSize: "var(--font-size-h2)" }}
-                      >{featured.title}</h2>
-
-                      {/* Excerpt */}
-                      {excerpt && (
-                        <p className="font-mono text-[#5A5A5A] leading-relaxed line-clamp-5 flex-1 mb-8" style={{ fontSize: "var(--font-size-body)" }}>
-                          {excerpt}
-                        </p>
-                      )}
-
-                      {/* Bottom meta row */}
-                      <div className="flex items-center justify-between pt-6 border-t border-[#CAC8C8]">
-                        <span className="font-mono text-[0.75rem] text-[#5A5A5A]">
-                          {new Date(featured.publishedAt!).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-                        </span>
-                        <span className="font-mono text-[0.75rem] text-[#5A5A5A] group-hover:text-[#101010] transition-colors">
-                          Read more →
-                        </span>
-                      </div>
-
-                    </div>
-                  </article>
-                </Link>
-              );
-            })()}
-
-            {/* GRID — remaining posts */}
+            {/* GRID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(page === 1 && !q && !category ? posts.slice(1) : posts).map((post: { id: string; slug: string; title: string; coverImage: string | null; publishedAt: Date | null; excerpt: string | null; content: unknown; categories: { name: string; slug: string }[] }) => {
+              {posts.map((post: { id: string; slug: string; title: string; coverImage: string | null; publishedAt: Date | null; excerpt: string | null; content: unknown; categories: { name: string; slug: string }[] }) => {
                 const excerpt = post.excerpt || extractExcerpt(post.content);
                 const date = new Date(post.publishedAt!).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
                 return (
