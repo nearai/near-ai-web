@@ -24,12 +24,11 @@ export default async function TagPage({ params, searchParams }: {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? 1));
   const skip = (page - 1) * PAGE_SIZE;
-  const now = new Date();
 
   const tag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
   if (!tag) notFound();
 
-  const where = { status: "PUBLISHED" as const, publishedAt: { lte: now }, tags: { some: { slug: tagSlug } } };
+  const where = { status: "PUBLISHED" as const, tags: { some: { slug: tagSlug } } };
   const [posts, total] = await Promise.all([
     prisma.post.findMany({
       where, orderBy: { publishedAt: "desc" }, take: PAGE_SIZE, skip,

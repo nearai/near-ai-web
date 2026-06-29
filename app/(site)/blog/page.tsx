@@ -30,11 +30,8 @@ export default async function BlogIndex({
   const { page: pageParam, q, category } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? 1));
   const skip = (page - 1) * PAGE_SIZE;
-  const now = new Date();
-
   const publishedWhere = {
     status: "PUBLISHED" as const,
-    publishedAt: { lte: now },
     ...(q && {
       OR: [
         { title: { contains: q, mode: "insensitive" as const } },
