@@ -91,15 +91,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               {related.map((p: { id: string; slug: string; title: string; coverImage: string | null; publishedAt: Date | null; author: { name: string | null } }) => (
                 <article key={p.id} className="group flex flex-col rounded-[1.5rem] overflow-hidden border border-[#CAC8C8] bg-[#ECECEC] hover:shadow-lg transition-shadow duration-300">
                   <Link href={`/blog/${p.slug}`} className="block overflow-hidden">
-                    {p.coverImage ? (
-                      <div className="relative aspect-video w-full bg-[#CAC8C8]">
-                        <Image src={p.coverImage} alt={p.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
-                      </div>
-                    ) : (
-                      <div className="aspect-video w-full bg-[#CAC8C8] flex items-center justify-center">
-                        <span className="text-[#e4e4e4] text-4xl">✦</span>
-                      </div>
-                    )}
+                    <div className="relative aspect-video w-full bg-[#CAC8C8]">
+                      <Image src={p.coverImage ?? "/blog-gen-background.jpg"} alt={p.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
+                    </div>
                   </Link>
                   <div className="p-5 flex flex-col flex-1">
                     <p className="font-mono text-[0.75rem] text-[#5A5A5A] mb-2">

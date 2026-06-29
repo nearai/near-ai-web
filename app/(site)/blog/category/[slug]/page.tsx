@@ -73,15 +73,9 @@ export default async function CategoryPage({ params, searchParams }: {
                 return (
                   <article key={post.id} className="group flex flex-col rounded-[1.5rem] overflow-hidden border border-[#CAC8C8] bg-[#ECECEC] hover:shadow-lg transition-shadow duration-300">
                     <Link href={`/blog/${post.slug}`} className="block overflow-hidden">
-                      {post.coverImage ? (
-                        <div className="relative aspect-[16/9] w-full bg-[#CAC8C8]">
-                          <Image src={post.coverImage} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
-                        </div>
-                      ) : (
-                        <div className="aspect-[16/9] w-full bg-[#CAC8C8] flex items-center justify-center">
-                          <span className="text-[#e4e4e4] text-4xl">✦</span>
-                        </div>
-                      )}
+                      <div className="relative aspect-[16/9] w-full bg-[#CAC8C8]">
+                        <Image src={post.coverImage ?? "/blog-gen-background.jpg"} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 33vw" />
+                      </div>
                     </Link>
                     <div className="flex flex-col flex-1 p-5">
                       <p className="font-mono text-[0.75rem] text-[#5A5A5A] mb-2">

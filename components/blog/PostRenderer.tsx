@@ -76,9 +76,7 @@ export default function PostRenderer({ post, layout = "public" }: PostRendererPr
             {new Date(displayDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             {layout === "admin" ? " (last updated)" : ` · ${readTime}`}
           </p>
-          {post.coverImage && (
-            <img src={post.coverImage} alt={post.title} className="w-full rounded-[1rem] object-cover" />
-          )}
+          <img src={post.coverImage ?? "/blog-gen-background.jpg"} alt={post.title} className="w-full rounded-[1rem] object-cover" />
         </div>
       </div>
 
