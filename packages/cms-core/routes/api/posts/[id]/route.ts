@@ -114,7 +114,7 @@ export async function PUT(
     const now = new Date();
     const incomingDate = data.publishedAt ? new Date(data.publishedAt) : null;
     const resolvedPublishedAt = data.status === "PUBLISHED"
-      ? (incomingDate && incomingDate <= now ? incomingDate : now)
+      ? (incomingDate ?? post.publishedAt ?? now)
       : (incomingDate ?? post.publishedAt);
 
     const updatedPost = await prisma.post.update({
