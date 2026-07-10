@@ -13,10 +13,7 @@ const TEAM = [
   { name: "Cameron Dennis", role: "Director of AI", photo: "/company/CameronDennis.webp" },
   { name: "Pierre Le Guen", role: "Head of Engineering", photo: "/company/PierreLeGuen.webp" },
   { name: "Pranav Raja", role: "ML Researcher", photo: "/company/PranavRaja.webp" },
-  { name: "Evrard-Nil Daillet", role: "Senior Software Engineer", photo: "/company/Evrard-NilDaillet.webp" },
   { name: "Henry Park", role: "Software Engineer", photo: "/company/HenryPark.webp" },
-  { name: "Nick Pismenkov", role: "Software Engineer", photo: "/company/NickPismenkov.webp" },
-  { name: "Emil Bogomolov", role: "Machine Learning Engineer", photo: "/company/EmilBogomolov.webp" },
 ];
 
 const FOUNDATION = [
