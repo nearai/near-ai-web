@@ -7,6 +7,9 @@ import "./globals.css";
 const montreal = localFont({
   src: [
     { path: "../public/fonts/pp-neue-montreal/PPNeueMontreal-Book.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/pp-neue-montreal/PPNeueMontreal-BookItalic.woff2", weight: "400", style: "italic" },
+    { path: "../public/fonts/pp-neue-montreal/PPNeueMontreal-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../public/fonts/pp-neue-montreal/PPNeueMontreal-Bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-montreal",
   display: "swap",
@@ -14,6 +17,7 @@ const montreal = localFont({
 
 const montrealMono = localFont({
   src: [
+    { path: "../public/fonts/pp-neue-montreal-mono/PPNeueMontrealMono-Light.woff2", weight: "300", style: "normal" },
     { path: "../public/fonts/pp-neue-montreal-mono/PPNeueMontrealMono-Book.woff2", weight: "400", style: "normal" },
   ],
   variable: "--font-montreal-mono",
