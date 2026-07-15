@@ -1,6 +1,7 @@
 import SiteHeader from "@/components/site/SiteHeader";
 import SiteFooter from "@/components/site/SiteFooter";
 import GetInTouchFormCard from "@/components/site/GetInTouchFormCard";
+import IsoCube from "@/components/site/IsoCube";
 
 export const metadata = {
   title: "Get In Touch | NEAR AI",
@@ -30,7 +31,20 @@ export default function GetInTouchPage() {
         {/* FORM */}
         <section className="bg-[#ECECEC] pb-20 pt-12 lg:pb-28 lg:pt-20">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <GetInTouchFormCard />
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="hidden lg:flex items-center justify-center">
+                <svg viewBox="-100 -100 200 200" className="w-64 h-64 xl:w-80 xl:h-80 overflow-visible">
+                  <IsoCube x={-33} y={-19} scale={0.8} />
+                  <IsoCube x={33} y={-19} scale={0.8} />
+                  <IsoCube x={0} y={0} scale={0.8} />
+                  <IsoCube x={0} y={-44} scale={0.8} />
+                  <IsoCube x={0} y={44} scale={0.8} />
+                  <IsoCube x={-33} y={19} scale={0.8} />
+                  <IsoCube x={33} y={19} scale={0.8} />
+                </svg>
+              </div>
+              <GetInTouchFormCard />
+            </div>
           </div>
         </section>
 
