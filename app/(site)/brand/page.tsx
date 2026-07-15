@@ -68,8 +68,8 @@ export default function BrandPage() {
             className="w-full h-full object-cover object-right"
           />
         </div>
-        <div className="absolute inset-0 z-[1] bg-[linear-gradient(to_right,rgba(255,255,255,0.75)_0%,rgba(255,255,255,0)_70%)] pointer-events-none" />
-        <div className="absolute inset-0 z-[1] bg-[linear-gradient(to_bottom_left,rgba(0,0,0,0.3)_0%,rgba(0,0,0,0)_50%)] pointer-events-none" />
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(to_right,rgba(238,238,235,0.9)_0%,rgba(238,238,235,0)_70%)] pointer-events-none" />
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(190deg,rgba(39,39,39,0.5)_0%,rgba(39,39,39,0)_70%)] pointer-events-none" />
         <div className="relative z-10 flex flex-col flex-1 mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
           <SiteHeader />
 
