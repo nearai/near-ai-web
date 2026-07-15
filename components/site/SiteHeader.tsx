@@ -8,7 +8,6 @@ import GetInTouchModal from "@/components/site/GetInTouchModal";
 const NAV_LINKS = [
   { href: "/blog", label: "BLOG" },
   { href: "/company", label: "OUR COMPANY" },
-  { href: "/brand", label: "BRAND" },
 ];
 
 export default function SiteHeader() {
