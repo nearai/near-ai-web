@@ -7,16 +7,45 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@cms/lib/auth";
 import { createS3Client } from "@cms/lib/s3";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const IMAGE_MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const DOWNLOAD_MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
-const EXT_MAP: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-  "image/svg+xml": "svg",
+interface FileTypeConfig {
+  ext: string;
+  maxSize: number;
+  validExtensions: string[];
+}
+
+const ALLOWED_TYPES: Record<string, FileTypeConfig> = {
+  "image/jpeg": { ext: "jpg", maxSize: IMAGE_MAX_SIZE, validExtensions: ["jpg", "jpeg"] },
+  "image/png": { ext: "png", maxSize: IMAGE_MAX_SIZE, validExtensions: ["png"] },
+  "image/webp": { ext: "webp", maxSize: IMAGE_MAX_SIZE, validExtensions: ["webp"] },
+  "image/gif": { ext: "gif", maxSize: IMAGE_MAX_SIZE, validExtensions: ["gif"] },
+  "image/svg+xml": { ext: "svg", maxSize: IMAGE_MAX_SIZE, validExtensions: ["svg"] },
+  "application/pdf": { ext: "pdf", maxSize: DOWNLOAD_MAX_SIZE, validExtensions: ["pdf"] },
+  "application/zip": { ext: "zip", maxSize: DOWNLOAD_MAX_SIZE, validExtensions: ["zip"] },
+  "application/x-zip-compressed": { ext: "zip", maxSize: DOWNLOAD_MAX_SIZE, validExtensions: ["zip"] },
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+    ext: "docx",
+    maxSize: DOWNLOAD_MAX_SIZE,
+    validExtensions: ["docx"],
+  },
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
+    ext: "pptx",
+    maxSize: DOWNLOAD_MAX_SIZE,
+    validExtensions: ["pptx"],
+  },
+  "video/mp4": { ext: "mp4", maxSize: DOWNLOAD_MAX_SIZE, validExtensions: ["mp4"] },
 };
+
+function resolveFileType(file: File): FileTypeConfig | null {
+  if (file.type === "application/octet-stream") {
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (ext === "zip") return ALLOWED_TYPES["application/zip"];
+    return null;
+  }
+  return ALLOWED_TYPES[file.type] ?? null;
+}
 
 const uploadRateLimit = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 20;
@@ -56,15 +85,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
   }
 
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  const config = resolveFileType(file);
+  if (!config) {
     return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
   }
 
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+  if (file.size > config.maxSize) {
+    const maxMb = config.maxSize / (1024 * 1024);
+    return NextResponse.json({ error: `File too large (max ${maxMb}MB)` }, { status: 400 });
   }
 
-  const ext = EXT_MAP[file.type];
+  const reportedExt = file.name.split(".").pop()?.toLowerCase();
+  if (!reportedExt || !config.validExtensions.includes(reportedExt)) {
+    return NextResponse.json(
+      { error: "File extension does not match its declared type" },
+      { status: 400 }
+    );
+  }
+
+  const ext = config.ext;
   const key = `uploads/${crypto.randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 

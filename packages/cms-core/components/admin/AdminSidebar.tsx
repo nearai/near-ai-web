@@ -8,6 +8,7 @@ import {
   FileText,
   Layers,
   Image,
+  FolderDown,
   Tag,
   Users,
   Settings,
@@ -134,6 +135,7 @@ export function AdminSidebar({ children, role, userName }: AdminSidebarProps) {
           {navLink("/admin/posts",      "Blog Posts",        <FileText        className={iconSize} />, false, "posts")}
           {navLink("/admin/pages",      "Pages",             <Layers          className={iconSize} />)}
           {navLink("/admin/media",      "Media Library",     <Image           className={iconSize} />, true, "media")}
+          {navLink("/admin/downloads",  "Downloads",         <FolderDown      className={iconSize} />, true, "downloads")}
           {navLink("/admin/categories", "Categories & Tags", <Tag             className={iconSize} />, true, "categories")}
           {role === "ADMIN" && (
             <>
