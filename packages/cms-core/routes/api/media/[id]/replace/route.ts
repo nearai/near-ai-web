@@ -2,13 +2,17 @@ export const dynamic = "force-dynamic";
 
 export const runtime = "nodejs";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@cms/lib/auth";
+import { prisma } from "@cms/lib/prisma";
 import { createS3Client } from "@cms/lib/s3";
 import { resolveFileType, checkRateLimit, contentDispositionHeader, CACHE_CONTROL } from "@cms/lib/upload-types";
 
-export async function POST(req: Request) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,6 +20,12 @@ export async function POST(req: Request) {
 
   if (!checkRateLimit(session.user.id)) {
     return NextResponse.json({ error: "Too many uploads. Try again in a minute." }, { status: 429 });
+  }
+
+  const { id } = await params;
+  const media = await prisma.media.findUnique({ where: { id } });
+  if (!media) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   let formData: FormData;
@@ -48,7 +58,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const key = `uploads/${crypto.randomUUID()}.${config.ext}`;
+  const currentExt = media.url.split(".").pop()?.toLowerCase();
+  if (config.ext !== currentExt) {
+    return NextResponse.json(
+      { error: `Replacement must be a .${currentExt} file` },
+      { status: 400 }
+    );
+  }
+
+  const key = media.url.replace(`${process.env.R2_PUBLIC_URL}/`, "");
   const buffer = Buffer.from(await file.arrayBuffer());
 
   const s3 = createS3Client();
@@ -58,21 +76,28 @@ export async function POST(req: Request) {
       Key: key,
       Body: buffer,
       ContentType: config.mimeType,
-      ContentDisposition: contentDispositionHeader(file.name),
+      ContentDisposition: contentDispositionHeader(media.filename),
       CacheControl: CACHE_CONTROL,
     })
   );
 
-  const url = `${process.env.R2_PUBLIC_URL}/${key}`;
+  const updated = await prisma.media.update({
+    where: { id },
+    data: { mimeType: config.mimeType, size: file.size },
+  });
 
   try {
-    const { prisma } = await import("@cms/lib/prisma");
-    await prisma.media.create({
-      data: { url, filename: file.name, mimeType: config.mimeType, size: file.size },
+    await (prisma as any).auditLog.create({
+      data: {
+        userId: session.user.id,
+        userEmail: session.user.email ?? "",
+        action: "UPDATE",
+        entityType: "MEDIA",
+        entityId: media.id,
+        entityTitle: media.filename,
+      },
     });
-  } catch (e) {
-    console.error("Failed to save media record", e);
-  }
+  } catch {}
 
-  return NextResponse.json({ url }, { status: 201 });
+  return NextResponse.json(updated);
 }

@@ -8,6 +8,10 @@ import {
   FileType,
   Video,
   File as FileIcon,
+  PenTool,
+  Figma,
+  FileImage,
+  FileSpreadsheet,
   Search,
   Loader2,
   CheckCircle2,
@@ -23,9 +27,13 @@ interface DownloadItem {
   size: number;
   alt: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+
+const ACCEPT_TYPES =
+  "application/pdf,.pdf,application/zip,application/x-zip-compressed,.zip,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx,video/mp4,.mp4,.ai,.fig,.psd,text/csv,application/vnd.ms-excel,.csv";
 
 function FileTypeIcon({ mimeType, className = "w-8 h-8" }: { mimeType: string; className?: string }) {
   if (mimeType === "application/pdf") return <FileText className={className} />;
@@ -33,6 +41,10 @@ function FileTypeIcon({ mimeType, className = "w-8 h-8" }: { mimeType: string; c
   if (mimeType.includes("wordprocessingml") || mimeType.includes("presentationml"))
     return <FileType className={className} />;
   if (mimeType.startsWith("video/")) return <Video className={className} />;
+  if (mimeType.includes("illustrator")) return <PenTool className={className} />;
+  if (mimeType.includes("figma")) return <Figma className={className} />;
+  if (mimeType.includes("photoshop")) return <FileImage className={className} />;
+  if (mimeType === "text/csv") return <FileSpreadsheet className={className} />;
   return <FileIcon className={className} />;
 }
 
@@ -60,7 +72,13 @@ export function DownloadsClient({ canBulkDelete }: { canBulkDelete: boolean }) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [isReplacing, setIsReplacing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const replaceInputRef = useRef<HTMLInputElement>(null);
+
+  function wasUpdated(item: DownloadItem) {
+    return new Date(item.updatedAt).getTime() - new Date(item.createdAt).getTime() > 1000;
+  }
 
   async function fetchDownloads(p: number, append = false, q = "") {
     const params = new URLSearchParams({ page: String(p), type: "other" });
@@ -215,6 +233,29 @@ export function DownloadsClient({ canBulkDelete }: { canBulkDelete: boolean }) {
     setIsSaving(false);
   }
 
+  async function handleReplace(file: File) {
+    if (!selectedItem) return;
+    setIsReplacing(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(`/api/media/${selectedItem.id}/replace`, { method: "POST", body: fd });
+      if (res.ok) {
+        const updated = await res.json();
+        setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+        setSelectedItem(updated);
+        toast.success("Archivo reemplazado");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error ?? "No se pudo reemplazar el archivo");
+      }
+    } catch {
+      toast.error("No se pudo reemplazar el archivo");
+    } finally {
+      setIsReplacing(false);
+    }
+  }
+
   async function copyUrl(item: DownloadItem) {
     await navigator.clipboard.writeText(item.url);
     setCopiedId(item.id);
@@ -322,6 +363,7 @@ export function DownloadsClient({ canBulkDelete }: { canBulkDelete: boolean }) {
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatBytes(item.size)} · {item.filename.split(".").pop()?.toUpperCase()} · {new Date(item.createdAt).toLocaleDateString()}
+                    {wasUpdated(item) && <> · Actualizado: {new Date(item.updatedAt).toLocaleDateString()}</>}
                   </p>
                   {item.alt && (
                     <p className="text-xs text-muted-foreground/70 truncate mt-0.5">{item.alt}</p>
@@ -439,12 +481,12 @@ export function DownloadsClient({ canBulkDelete }: { canBulkDelete: boolean }) {
                   <FileIcon className="w-16 h-16 opacity-30" />
                   <p className="text-xl font-semibold">Arrastra tus archivos aquí</p>
                   <p className="text-base">o haz clic para elegir</p>
-                  <p className="text-sm text-muted-foreground mt-2">PDF · ZIP · DOCX · PPTX · MP4 — hasta 50MB</p>
+                  <p className="text-sm text-muted-foreground mt-2">PDF · ZIP · DOCX · PPTX · MP4 · AI · FIG · PSD · CSV — hasta 50MB</p>
                   <input
                     ref={fileInputRef}
                     type="file"
                     multiple
-                    accept="application/pdf,.pdf,application/zip,application/x-zip-compressed,.zip,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx,video/mp4,.mp4"
+                    accept={ACCEPT_TYPES}
                     className="hidden"
                     onChange={(e) => {
                       const files = Array.from(e.target.files ?? []);
@@ -488,6 +530,7 @@ export function DownloadsClient({ canBulkDelete }: { canBulkDelete: boolean }) {
                     </p>
                     <p className="text-sm text-muted-foreground -mt-2">
                       {formatBytes(selectedItem.size)} · {selectedItem.filename.split(".").pop()?.toUpperCase()}
+                      {wasUpdated(selectedItem) && <> · Actualizado: {new Date(selectedItem.updatedAt).toLocaleDateString()}</>}
                     </p>
                     <hr className="border-border" />
                     <div>
@@ -540,6 +583,28 @@ export function DownloadsClient({ canBulkDelete }: { canBulkDelete: boolean }) {
                         Eliminar
                       </button>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => replaceInputRef.current?.click()}
+                      disabled={isReplacing}
+                      className="w-full text-sm px-3 py-2 rounded-lg border border-border hover:bg-muted transition disabled:opacity-50"
+                    >
+                      {isReplacing
+                        ? "Reemplazando…"
+                        : `Reemplazar archivo (.${selectedItem.filename.split(".").pop()?.toLowerCase()})`}
+                    </button>
+                    <input
+                      ref={replaceInputRef}
+                      type="file"
+                      accept={`.${selectedItem.filename.split(".").pop()?.toLowerCase()}`}
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleReplace(file);
+                        e.target.value = "";
+                      }}
+                    />
 
                     <hr className="border-border" />
                     <button

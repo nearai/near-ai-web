@@ -1,10 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@cms/lib/auth";
 import { prisma } from "@cms/lib/prisma";
 import { createS3Client } from "@cms/lib/s3";
+import { contentDispositionHeader, CACHE_CONTROL } from "@cms/lib/upload-types";
 
 export async function PATCH(
   req: NextRequest,
@@ -30,6 +31,27 @@ export async function PATCH(
       ...(alt !== undefined && { alt }),
     },
   });
+
+  if (filename !== undefined && filename !== media.filename) {
+    const key = media.url.replace(`${process.env.R2_PUBLIC_URL}/`, "");
+    const s3 = createS3Client();
+    try {
+      await s3.send(
+        new CopyObjectCommand({
+          Bucket: process.env.S3_BUCKET,
+          Key: key,
+          CopySource: `${process.env.S3_BUCKET}/${encodeURIComponent(key)}`,
+          MetadataDirective: "REPLACE",
+          ContentType: media.mimeType,
+          ContentDisposition: contentDispositionHeader(filename),
+          CacheControl: CACHE_CONTROL,
+        })
+      );
+    } catch (e) {
+      console.error("Failed to sync renamed filename to R2 object metadata", e);
+    }
+  }
+
   return NextResponse.json(updated);
 }
 
