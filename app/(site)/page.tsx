@@ -9,7 +9,6 @@ import FeatureCard from "@/components/site/v2/FeatureCard";
 import UseCaseCard from "@/components/site/v2/UseCaseCard";
 import PartnerRow from "@/components/site/v2/PartnerRow";
 import ConcentricRings from "@/components/site/v2/ConcentricRings";
-import SiteFooter from "@/components/site/SiteFooter";
 
 
 const PARTNERS = [
@@ -308,9 +307,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        <SiteFooter />
-
       </div>
     </div>
   );

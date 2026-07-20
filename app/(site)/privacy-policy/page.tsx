@@ -1,5 +1,4 @@
 import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
 
 
 const TOC = [
@@ -368,8 +367,6 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
         </section>
-        <SiteFooter />
-
       </div>
     </div>
   );

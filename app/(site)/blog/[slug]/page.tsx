@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { extractExcerpt } from "@near/cms-core/lib/excerpt";
 import PostRenderer from "@/components/blog/PostRenderer";
-import SiteFooter from "@/components/site/SiteFooter";
 
 export const revalidate = 60;
 
@@ -112,8 +111,6 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           </div>
         </div>
       )}
-
-      <SiteFooter />
     </>
   );
 }

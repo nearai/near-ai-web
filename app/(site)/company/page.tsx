@@ -1,7 +1,6 @@
 import Image from "next/image";
 import PillButton from "@/components/site/PillButton";
 import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
 import AnimationsProvider from "@/components/site/providers/AnimationsProvider";
 import CompanyAnimations from "@/components/site/company/CompanyAnimations";
 import PersonCard from "@/components/site/company/PersonCard";
@@ -250,9 +249,6 @@ export default function CompanyPage() {
             </div>
           </div>
         </section>
-
-        <SiteFooter />
-
       </div>
     </div>
   );

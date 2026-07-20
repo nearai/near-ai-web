@@ -4,7 +4,6 @@ import { prisma } from "@near/cms-core/lib/prisma";
 import { extractExcerpt } from "@near/cms-core/lib/excerpt";
 import { Metadata } from "next";
 import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
 
 export const revalidate = 60;
 
@@ -186,8 +185,6 @@ export default async function BlogIndex({
           </>
         )}
       </div>
-
-      <SiteFooter />
     </>
   );
 }

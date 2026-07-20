@@ -1,5 +1,4 @@
 import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
 
 
 const TOC = [
@@ -238,8 +237,6 @@ export default function CookiePolicyPage() {
             </div>
           </div>
         </section>
-        <SiteFooter />
-
       </div>
     </div>
   );

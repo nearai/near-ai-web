@@ -1,5 +1,4 @@
 import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
 import BrandPillLink from "@/components/site/brand/BrandPillLink";
 import BrandLogoCard from "@/components/site/brand/BrandLogoCard";
 import CopyableSwatch from "@/components/site/brand/CopyableSwatch";
@@ -348,8 +347,6 @@ export default function BrandPage() {
           </div>
         </section>
       </div>
-
-      <SiteFooter />
     </div>
   );
 }

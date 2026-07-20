@@ -1,5 +1,4 @@
 import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
 import GetInTouchFormCard from "@/components/site/GetInTouchFormCard";
 import IsoCube from "@/components/site/IsoCube";
 
@@ -47,8 +46,6 @@ export default function GetInTouchPage() {
             </div>
           </div>
         </section>
-
-        <SiteFooter />
       </div>
     </div>
   );
