@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from "@cms/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface BannerRow {
   id: string;
@@ -46,11 +47,16 @@ function EnabledToggle({ id, enabled }: { id: string; enabled: boolean }) {
   async function toggle(checked: boolean) {
     setLoading(true);
     try {
-      await fetch(`/api/banners/${id}`, {
+      const res = await fetch(`/api/banners/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: checked }),
       });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        toast.error(error.error || "Failed to update banner");
+        return;
+      }
       setIsEnabled(checked);
       router.refresh();
     } finally {

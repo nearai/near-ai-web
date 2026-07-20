@@ -10,6 +10,8 @@ export type ModalPosition =
   | "CENTER_LEFT" | "CENTER" | "CENTER_RIGHT"
   | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT";
 
+export type BannerDisplayMode = "OVERLAY" | "PUSH";
+
 export interface SerializedBanner extends BannerContentData {
   id: string;
   type: "TOP" | "MODAL" | "BOTTOM";
@@ -18,6 +20,7 @@ export interface SerializedBanner extends BannerContentData {
   modalDelaySeconds: number | null;
   modalScrollPercent: number | null;
   modalPosition: ModalPosition;
+  displayMode: BannerDisplayMode;
 }
 
 const TRANSITION_MS = 200;
@@ -133,9 +136,13 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
   const position = banner.modalPosition ?? "CENTER";
   const isCenterModal = isModal && position === "CENTER";
 
+  const isPush = !isModal && banner.displayMode === "PUSH";
+
   const wrapperClass = isModal
     ? MODAL_POSITION_WRAPPER[position]
-    : `fixed ${banner.type === "TOP" ? "top-0" : "bottom-0"} left-0 right-0 z-50`;
+    : isPush
+      ? "relative w-full"
+      : `fixed ${banner.type === "TOP" ? "top-0" : "bottom-0"} left-0 right-0 z-50`;
 
   const overlayTransition = `transition-opacity duration-200 ease-out ${shown ? "opacity-100" : "opacity-0"}`;
 

@@ -28,6 +28,7 @@ async function getActiveBanners() {
         modalDelaySeconds: true,
         modalScrollPercent: true,
         modalPosition: true,
+        displayMode: true,
       },
     });
   } catch (error) {
@@ -43,8 +44,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <LenisProvider>
       <AnalyticsScripts />
-      <BannerHost banners={banners as any} />
+      <BannerHost banners={banners as any} slot="top" />
       {children}
+      <BannerHost banners={banners as any} slot="bottom" />
     </LenisProvider>
   );
 }

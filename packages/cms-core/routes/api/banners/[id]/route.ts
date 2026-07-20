@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@cms/lib/auth";
 import { prisma } from "@cms/lib/prisma";
 import { z } from "zod";
-import { bannerBaseSchema, refineBannerRules } from "../route";
+import { bannerBaseSchema, refineBannerRules, findConflictingBanner } from "../route";
 
 const updateBannerSchema = refineBannerRules(bannerBaseSchema.partial());
 
@@ -56,6 +56,22 @@ export async function PUT(
 
     const body = await req.json();
     const data = updateBannerSchema.parse(body);
+
+    const resolvedType = data.type ?? banner.type;
+    const resolvedPaths = data.paths ?? banner.paths;
+    const resolvedEnabled = data.enabled ?? banner.enabled;
+
+    if (resolvedEnabled) {
+      const conflict = await findConflictingBanner(resolvedType, resolvedPaths, id);
+      if (conflict) {
+        return NextResponse.json(
+          {
+            error: `Another enabled ${resolvedType} banner ("${conflict.name}") already targets an overlapping page. Disable it or narrow the pages before enabling this one.`,
+          },
+          { status: 409 }
+        );
+      }
+    }
 
     const resolvedContentMode = data.contentMode ?? banner.contentMode;
 

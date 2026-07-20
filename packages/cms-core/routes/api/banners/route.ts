@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { auth } from "@cms/lib/auth";
 import { prisma } from "@cms/lib/prisma";
+import { bannerPathsOverlap } from "@cms/lib/banner-matching";
 import { z } from "zod";
 
 const bannerTypeEnum = z.enum(["TOP", "MODAL", "BOTTOM"]);
@@ -14,6 +15,7 @@ const bannerModalPositionEnum = z.enum([
   "CENTER_LEFT", "CENTER", "CENTER_RIGHT",
   "BOTTOM_LEFT", "BOTTOM_CENTER", "BOTTOM_RIGHT",
 ]);
+const bannerDisplayModeEnum = z.enum(["OVERLAY", "PUSH"]);
 
 export const bannerBaseSchema = z.object({
   name: z.string().min(1),
@@ -27,9 +29,32 @@ export const bannerBaseSchema = z.object({
   modalDelaySeconds: z.number().int().min(0).max(600).optional().nullable(),
   modalScrollPercent: z.number().int().min(0).max(100).optional().nullable(),
   modalPosition: bannerModalPositionEnum.optional(),
+  displayMode: bannerDisplayModeEnum.optional(),
   startDate: z.string().optional().nullable(),
   endDate: z.string().optional().nullable(),
 });
+
+// TOP/BOTTOM can only ever render one banner per page (see pickActiveBannerPerSlot),
+// so enabling a second one with overlapping paths would silently never show. MODAL
+// is intentionally not restricted here.
+export async function findConflictingBanner(
+  type: "TOP" | "MODAL" | "BOTTOM",
+  paths: string[],
+  excludeId?: string
+) {
+  if (type !== "TOP" && type !== "BOTTOM") return null;
+
+  const others = await prisma.banner.findMany({
+    where: {
+      type,
+      enabled: true,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { id: true, name: true, paths: true },
+  });
+
+  return others.find((other) => bannerPathsOverlap(paths, other.paths)) ?? null;
+}
 
 export function refineBannerRules<T extends z.ZodTypeAny>(schema: T) {
   return schema
@@ -91,6 +116,18 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const data = createBannerSchema.parse(body);
+
+    if (data.enabled) {
+      const conflict = await findConflictingBanner(data.type, data.paths);
+      if (conflict) {
+        return NextResponse.json(
+          {
+            error: `Another enabled ${data.type} banner ("${conflict.name}") already targets an overlapping page. Disable it or narrow the pages before enabling this one.`,
+          },
+          { status: 409 }
+        );
+      }
+    }
 
     const banner = await prisma.banner.create({
       data: {

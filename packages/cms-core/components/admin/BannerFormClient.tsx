@@ -28,6 +28,7 @@ import { PathsListInput } from "@cms/pages/admin/banners/PathsListInput";
 type BannerType = "TOP" | "MODAL" | "BOTTOM";
 type BannerFrequency = "ALWAYS" | "ONCE_PER_SESSION" | "DONT_SHOW_AGAIN";
 type BannerContentMode = "EDITOR" | "HTML";
+type BannerDisplayMode = "OVERLAY" | "PUSH";
 type ModalPosition =
   | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT"
   | "CENTER_LEFT" | "CENTER" | "CENTER_RIGHT"
@@ -65,6 +66,16 @@ const FREQUENCY_HELP: Record<BannerFrequency, string> = {
   DONT_SHOW_AGAIN: "Hidden permanently after closing, until local storage is cleared.",
 };
 
+function displayModeHelp(type: BannerType): Record<BannerDisplayMode, string> {
+  return {
+    OVERLAY: "Floats over the page (position: fixed). Doesn't affect page layout.",
+    PUSH:
+      type === "TOP"
+        ? "Pushes the header and page content down to make room for the banner."
+        : "Pushes the page content up — appears after the footer, not floating over it.",
+  };
+}
+
 export default function BannerFormClient({
   mode,
 }: {
@@ -90,6 +101,7 @@ export default function BannerFormClient({
   const [modalDelaySeconds, setModalDelaySeconds] = useState("");
   const [modalScrollPercent, setModalScrollPercent] = useState("");
   const [modalPosition, setModalPosition] = useState<ModalPosition>("CENTER");
+  const [displayMode, setDisplayMode] = useState<BannerDisplayMode>("OVERLAY");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [analytics, setAnalytics] = useState({ viewCount: 0, clickCount: 0, dismissCount: 0 });
@@ -114,6 +126,7 @@ export default function BannerFormClient({
         setModalDelaySeconds(banner.modalDelaySeconds != null ? String(banner.modalDelaySeconds) : "");
         setModalScrollPercent(banner.modalScrollPercent != null ? String(banner.modalScrollPercent) : "");
         setModalPosition(banner.modalPosition ?? "CENTER");
+        setDisplayMode(banner.displayMode ?? "OVERLAY");
         setStartDate(toDatetimeLocalString(banner.startDate));
         setEndDate(toDatetimeLocalString(banner.endDate));
         setAnalytics({
@@ -159,6 +172,7 @@ export default function BannerFormClient({
         modalDelaySeconds: type === "MODAL" && modalDelaySeconds ? Number(modalDelaySeconds) : null,
         modalScrollPercent: type === "MODAL" && modalScrollPercent ? Number(modalScrollPercent) : null,
         modalPosition,
+        displayMode: type === "MODAL" ? "OVERLAY" : displayMode,
         startDate: startDate ? new Date(startDate).toISOString() : null,
         endDate: endDate ? new Date(endDate).toISOString() : null,
       };
@@ -386,6 +400,21 @@ export default function BannerFormClient({
               </select>
               <p className="text-xs text-muted-foreground">{FREQUENCY_HELP[frequency]}</p>
             </div>
+            {type !== "MODAL" && (
+              <div className="space-y-2">
+                <Label htmlFor="displayMode" className="text-xs font-medium">Display</Label>
+                <select
+                  id="displayMode"
+                  value={displayMode}
+                  onChange={(e) => setDisplayMode(e.target.value as BannerDisplayMode)}
+                  className="w-full border border-border/70 rounded-[var(--radius)] px-3 py-2 text-sm bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="OVERLAY">Overlay</option>
+                  <option value="PUSH">Push content</option>
+                </select>
+                <p className="text-xs text-muted-foreground">{displayModeHelp(type)[displayMode]}</p>
+              </div>
+            )}
             {type === "MODAL" && (
               <div className="space-y-4 rounded-lg border border-border/70 p-3 bg-muted/20">
                 <div className="space-y-2">

@@ -87,6 +87,7 @@ model Banner {
   modalDelaySeconds  Int?
   modalScrollPercent Int?
   modalPosition      BannerModalPosition @default(CENTER)
+  displayMode        BannerDisplayMode @default(OVERLAY)
   startDate          DateTime?
   endDate            DateTime?
   viewCount          Int               @default(0)
@@ -204,4 +205,9 @@ enum BannerModalPosition {
   BOTTOM_LEFT
   BOTTOM_CENTER
   BOTTOM_RIGHT
+}
+
+enum BannerDisplayMode {
+  OVERLAY
+  PUSH
 }
