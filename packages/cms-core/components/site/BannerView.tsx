@@ -49,11 +49,16 @@ const MODAL_POSITION_WRAPPER: Record<ModalPosition, string> = {
 };
 
 export default function BannerView({ banner }: { banner: SerializedBanner }) {
+  const isModal = banner.type === "MODAL";
+  const isPush = !isModal && banner.displayMode === "PUSH";
+
   const [triggered, setTriggered] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [shown, setShown] = useState(false);
+  const [collapseHeight, setCollapseHeight] = useState<number | null>(null);
   const hasTrackedView = useRef(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isBannerDismissed(banner.id, banner.frequency)) {
@@ -99,16 +104,21 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
   }, [banner.id]);
 
   // Mount into the DOM once triggered, then flip `shown` on the next frame so the
-  // enter transition actually animates from its initial (hidden) state.
+  // enter transition actually animates from its initial (hidden) state. Push
+  // banners skip that delay — the layout shift on mount is already instant, so
+  // fading/sliding the content in on top of it would look mismatched.
   useEffect(() => {
-    if (triggered && !dismissed) setMounted(true);
-  }, [triggered, dismissed]);
+    if (triggered && !dismissed) {
+      setMounted(true);
+      if (isPush) setShown(true);
+    }
+  }, [triggered, dismissed, isPush]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || isPush) return;
     const raf = requestAnimationFrame(() => setShown(true));
     return () => cancelAnimationFrame(raf);
-  }, [mounted]);
+  }, [mounted, isPush]);
 
   useEffect(() => {
     if (shown && !hasTrackedView.current) {
@@ -118,6 +128,14 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
   }, [shown, banner.id]);
 
   function handleDismiss() {
+    if (isPush && wrapperRef.current) {
+      // CSS can't transition from `height: auto`, so lock in the current
+      // rendered height first (no visual change), then animate it to 0 on the
+      // next frame — the page content collapses in step with the banner
+      // instead of jumping once it unmounts.
+      setCollapseHeight(wrapperRef.current.getBoundingClientRect().height);
+      requestAnimationFrame(() => setCollapseHeight(0));
+    }
     setShown(false);
     markBannerDismissed(banner.id, banner.frequency);
     track(banner.id, "DISMISS");
@@ -131,18 +149,16 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
 
   if (dismissed || !mounted) return null;
 
-  const isModal = banner.type === "MODAL";
   const isHtml = banner.contentMode === "HTML";
   const position = banner.modalPosition ?? "CENTER";
   const isCenterModal = isModal && position === "CENTER";
 
-  const isPush = !isModal && banner.displayMode === "PUSH";
-
   const wrapperClass = isModal
     ? MODAL_POSITION_WRAPPER[position]
     : isPush
-      ? "relative w-full"
+      ? "relative w-full overflow-hidden transition-[height] duration-200 ease-out"
       : `fixed ${banner.type === "TOP" ? "top-0" : "bottom-0"} left-0 right-0 z-50`;
+  const wrapperStyle = isPush && collapseHeight !== null ? { height: collapseHeight } : undefined;
 
   const overlayTransition = `transition-opacity duration-200 ease-out ${shown ? "opacity-100" : "opacity-0"}`;
 
@@ -167,7 +183,9 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
 
   return (
     <div
+      ref={wrapperRef}
       className={isModal ? `${wrapperClass} ${isCenterModal ? overlayTransition : ""}` : wrapperClass}
+      style={wrapperStyle}
       onClick={handleContentClick}
     >
       <div className={innerClass}>
