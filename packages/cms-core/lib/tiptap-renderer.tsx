@@ -1,6 +1,6 @@
 import React from "react";
-import DOMPurify from "isomorphic-dompurify";
 import { slugifyHeading } from "@cms/lib/extractHeadings";
+import { sanitizeRawHtml } from "@cms/lib/sanitize-html";
 
 interface TipTapNode {
   type: string;
@@ -291,10 +291,7 @@ export function renderBlocks(
         );
 
       case "rawHtmlBlock": {
-        const cleanHtml = DOMPurify.sanitize(node.attrs?.content ?? "", {
-          FORBID_TAGS: ["form", "input", "button", "select", "textarea", "base", "meta"],
-          FORBID_ATTR: ["style"],
-        });
+        const cleanHtml = sanitizeRawHtml(node.attrs?.content);
         return (
           <div
             key={i}

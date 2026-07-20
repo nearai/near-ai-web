@@ -3,7 +3,7 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { useState } from "react";
 import { Code, Eye, EyeOff, Trash2 } from "lucide-react";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeRawHtml } from "@cms/lib/sanitize-html";
 
 export function RawHtmlBlockView({ node, updateAttributes, deleteNode }: any) {
   const [showPreview, setShowPreview] = useState(false);
@@ -46,10 +46,7 @@ export function RawHtmlBlockView({ node, updateAttributes, deleteNode }: any) {
           <div
             className="p-4 prose dark:prose-invert max-w-none"
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(node.attrs.content ?? "", {
-                FORBID_TAGS: ["form", "input", "button", "select", "textarea", "base", "meta"],
-                FORBID_ATTR: ["style"],
-              }),
+              __html: sanitizeRawHtml(node.attrs.content),
             }}
           />
         ) : (

@@ -22,6 +22,7 @@ model User {
   lastEditedPages Page[]   @relation("PageLastEditor")
   posts           Post[]   @relation("PostAuthor")
   lastEditedPosts Post[]   @relation("PostLastEditor")
+  banners         Banner[] @relation("BannerAuthor")
 }
 
 model Post {
@@ -71,6 +72,31 @@ model Page {
   excludeFromSitemap Boolean @default(false)
   author           User     @relation("PageAuthor", fields: [authorId], references: [id])
   lastEditedBy     User?    @relation("PageLastEditor", fields: [lastEditedById], references: [id])
+}
+
+model Banner {
+  id                 String            @id @default(cuid())
+  name               String
+  type               BannerType        @default(TOP)
+  paths              String[]          @default([])
+  enabled            Boolean           @default(false)
+  frequency          BannerFrequency   @default(ALWAYS)
+  contentMode        BannerContentMode @default(EDITOR)
+  content            Json?
+  htmlContent        String?
+  modalDelaySeconds  Int?
+  modalScrollPercent Int?
+  startDate          DateTime?
+  endDate            DateTime?
+  viewCount          Int               @default(0)
+  clickCount         Int               @default(0)
+  dismissCount       Int               @default(0)
+  authorId           String
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  author             User              @relation("BannerAuthor", fields: [authorId], references: [id])
+
+  @@index([enabled])
 }
 
 model Media {
@@ -148,4 +174,21 @@ enum Status {
   DRAFT
   PUBLISHED
   ARCHIVED
+}
+
+enum BannerType {
+  TOP
+  MODAL
+  BOTTOM
+}
+
+enum BannerFrequency {
+  ALWAYS
+  ONCE_PER_SESSION
+  DONT_SHOW_AGAIN
+}
+
+enum BannerContentMode {
+  EDITOR
+  HTML
 }
