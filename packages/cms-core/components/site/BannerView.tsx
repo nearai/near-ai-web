@@ -5,6 +5,11 @@ import { X } from "lucide-react";
 import { isBannerDismissed, markBannerDismissed, type BannerFrequency } from "@cms/lib/banner-storage";
 import BannerContent, { type BannerContentData } from "./BannerContent";
 
+export type ModalPosition =
+  | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT"
+  | "CENTER_LEFT" | "CENTER" | "CENTER_RIGHT"
+  | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT";
+
 export interface SerializedBanner extends BannerContentData {
   id: string;
   type: "TOP" | "MODAL" | "BOTTOM";
@@ -12,7 +17,10 @@ export interface SerializedBanner extends BannerContentData {
   frequency: BannerFrequency;
   modalDelaySeconds: number | null;
   modalScrollPercent: number | null;
+  modalPosition: ModalPosition;
 }
+
+const TRANSITION_MS = 200;
 
 function track(id: string, event: "VIEW" | "CLICK" | "DISMISS") {
   fetch("/api/banners/track", {
@@ -23,9 +31,25 @@ function track(id: string, event: "VIEW" | "CLICK" | "DISMISS") {
   }).catch(() => {});
 }
 
+// Only CENTER gets the classic dimmed full-screen modal treatment. Every other
+// position floats as a toast-like card anchored to that corner/edge, no backdrop.
+const MODAL_POSITION_WRAPPER: Record<ModalPosition, string> = {
+  CENTER: "fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4",
+  TOP_LEFT: "fixed top-4 left-4 z-50",
+  TOP_CENTER: "fixed top-4 left-1/2 -translate-x-1/2 z-50",
+  TOP_RIGHT: "fixed top-4 right-4 z-50",
+  CENTER_LEFT: "fixed top-1/2 left-4 -translate-y-1/2 z-50",
+  CENTER_RIGHT: "fixed top-1/2 right-4 -translate-y-1/2 z-50",
+  BOTTOM_LEFT: "fixed bottom-4 left-4 z-50",
+  BOTTOM_CENTER: "fixed bottom-4 left-1/2 -translate-x-1/2 z-50",
+  BOTTOM_RIGHT: "fixed bottom-4 right-4 z-50",
+};
+
 export default function BannerView({ banner }: { banner: SerializedBanner }) {
-  const [visible, setVisible] = useState(false);
+  const [triggered, setTriggered] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [shown, setShown] = useState(false);
   const hasTrackedView = useRef(false);
 
   useEffect(() => {
@@ -35,14 +59,14 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
     }
 
     if (banner.type !== "MODAL") {
-      setVisible(true);
+      setTriggered(true);
       return;
     }
 
     const hasDelay = banner.modalDelaySeconds != null;
     const hasScroll = banner.modalScrollPercent != null;
     if (!hasDelay && !hasScroll) {
-      setVisible(true);
+      setTriggered(true);
       return;
     }
 
@@ -50,7 +74,7 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
     const fire = () => {
       if (!fired) {
         fired = true;
-        setVisible(true);
+        setTriggered(true);
       }
     };
 
@@ -71,17 +95,30 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [banner.id]);
 
+  // Mount into the DOM once triggered, then flip `shown` on the next frame so the
+  // enter transition actually animates from its initial (hidden) state.
   useEffect(() => {
-    if (visible && !hasTrackedView.current) {
+    if (triggered && !dismissed) setMounted(true);
+  }, [triggered, dismissed]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const raf = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(raf);
+  }, [mounted]);
+
+  useEffect(() => {
+    if (shown && !hasTrackedView.current) {
       hasTrackedView.current = true;
       track(banner.id, "VIEW");
     }
-  }, [visible, banner.id]);
+  }, [shown, banner.id]);
 
   function handleDismiss() {
-    setVisible(false);
+    setShown(false);
     markBannerDismissed(banner.id, banner.frequency);
     track(banner.id, "DISMISS");
+    setTimeout(() => setMounted(false), TRANSITION_MS);
   }
 
   function handleContentClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -89,28 +126,49 @@ export default function BannerView({ banner }: { banner: SerializedBanner }) {
     if (link) track(banner.id, "CLICK");
   }
 
-  if (dismissed || !visible) return null;
+  if (dismissed || !mounted) return null;
 
-  const wrapperClass =
-    banner.type === "TOP"
-      ? "fixed top-0 left-0 right-0 z-50"
-      : banner.type === "BOTTOM"
-      ? "fixed bottom-0 left-0 right-0 z-50"
-      : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4";
+  const isModal = banner.type === "MODAL";
+  const isHtml = banner.contentMode === "HTML";
+  const position = banner.modalPosition ?? "CENTER";
+  const isCenterModal = isModal && position === "CENTER";
 
-  const innerClass =
-    banner.type === "MODAL"
-      ? "relative max-w-lg w-full bg-background rounded-2xl shadow-xl p-6"
-      : "relative bg-background border-b border-border px-4 py-3 pr-10";
+  const wrapperClass = isModal
+    ? MODAL_POSITION_WRAPPER[position]
+    : `fixed ${banner.type === "TOP" ? "top-0" : "bottom-0"} left-0 right-0 z-50`;
+
+  const overlayTransition = `transition-opacity duration-200 ease-out ${shown ? "opacity-100" : "opacity-0"}`;
+
+  const cardBaseClass = isCenterModal
+    ? "relative max-w-lg w-full rounded-2xl shadow-xl"
+    : "relative max-w-sm rounded-2xl shadow-xl";
+  const cardChromeClass = isHtml ? "" : "bg-background p-6";
+  const cardTransition = `transition-all duration-200 ease-out ${shown ? "scale-100 opacity-100" : "scale-95 opacity-0"}`;
+
+  const barChromeClass = isHtml
+    ? "relative w-full"
+    : `relative w-full bg-background px-4 py-3 pr-10 flex items-center justify-center text-center ${
+        banner.type === "TOP" ? "border-b" : "border-t"
+      } border-border`;
+  const barTransition = `transition-all duration-200 ease-out ${
+    shown ? "translate-y-0 opacity-100" : `${banner.type === "TOP" ? "-translate-y-full" : "translate-y-full"} opacity-0`
+  }`;
+
+  const innerClass = isModal
+    ? `${cardBaseClass} ${cardChromeClass} ${cardTransition}`
+    : `${barChromeClass} ${barTransition}`;
 
   return (
-    <div className={wrapperClass} onClick={handleContentClick}>
+    <div
+      className={isModal ? `${wrapperClass} ${isCenterModal ? overlayTransition : ""}` : wrapperClass}
+      onClick={handleContentClick}
+    >
       <div className={innerClass}>
         <button
           type="button"
           onClick={handleDismiss}
           aria-label="Close"
-          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition"
+          className="absolute top-3 right-3 z-10 text-muted-foreground hover:text-foreground transition bg-background/70 rounded-full p-0.5"
         >
           <X size={16} />
         </button>

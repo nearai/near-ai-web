@@ -27,6 +27,7 @@ async function getActiveBanners() {
         htmlContent: true,
         modalDelaySeconds: true,
         modalScrollPercent: true,
+        modalPosition: true,
       },
     });
   } catch (error) {

@@ -1,0 +1,6 @@
+-- CreateEnum
+CREATE TYPE "BannerModalPosition" AS ENUM ('TOP_LEFT', 'TOP_CENTER', 'TOP_RIGHT', 'CENTER_LEFT', 'CENTER', 'CENTER_RIGHT', 'BOTTOM_LEFT', 'BOTTOM_CENTER', 'BOTTOM_RIGHT');
+
+-- AlterTable
+ALTER TABLE "Banner" ADD COLUMN     "modalPosition" "BannerModalPosition" NOT NULL DEFAULT 'CENTER',
+ALTER COLUMN "contentMode" SET DEFAULT 'HTML';

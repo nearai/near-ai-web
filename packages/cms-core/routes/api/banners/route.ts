@@ -9,6 +9,11 @@ import { z } from "zod";
 const bannerTypeEnum = z.enum(["TOP", "MODAL", "BOTTOM"]);
 const bannerFrequencyEnum = z.enum(["ALWAYS", "ONCE_PER_SESSION", "DONT_SHOW_AGAIN"]);
 const bannerContentModeEnum = z.enum(["EDITOR", "HTML"]);
+const bannerModalPositionEnum = z.enum([
+  "TOP_LEFT", "TOP_CENTER", "TOP_RIGHT",
+  "CENTER_LEFT", "CENTER", "CENTER_RIGHT",
+  "BOTTOM_LEFT", "BOTTOM_CENTER", "BOTTOM_RIGHT",
+]);
 
 export const bannerBaseSchema = z.object({
   name: z.string().min(1),
@@ -21,6 +26,7 @@ export const bannerBaseSchema = z.object({
   htmlContent: z.string().optional().nullable(),
   modalDelaySeconds: z.number().int().min(0).max(600).optional().nullable(),
   modalScrollPercent: z.number().int().min(0).max(100).optional().nullable(),
+  modalPosition: bannerModalPositionEnum.optional(),
   startDate: z.string().optional().nullable(),
   endDate: z.string().optional().nullable(),
 });

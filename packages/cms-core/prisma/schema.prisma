@@ -81,11 +81,12 @@ model Banner {
   paths              String[]          @default([])
   enabled            Boolean           @default(false)
   frequency          BannerFrequency   @default(ALWAYS)
-  contentMode        BannerContentMode @default(EDITOR)
+  contentMode        BannerContentMode @default(HTML)
   content            Json?
   htmlContent        String?
   modalDelaySeconds  Int?
   modalScrollPercent Int?
+  modalPosition      BannerModalPosition @default(CENTER)
   startDate          DateTime?
   endDate            DateTime?
   viewCount          Int               @default(0)
@@ -191,4 +192,16 @@ enum BannerFrequency {
 enum BannerContentMode {
   EDITOR
   HTML
+}
+
+enum BannerModalPosition {
+  TOP_LEFT
+  TOP_CENTER
+  TOP_RIGHT
+  CENTER_LEFT
+  CENTER
+  CENTER_RIGHT
+  BOTTOM_LEFT
+  BOTTOM_CENTER
+  BOTTOM_RIGHT
 }

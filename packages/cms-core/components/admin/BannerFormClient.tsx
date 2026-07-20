@@ -22,12 +22,34 @@ import {
 } from "@cms/components/ui/alert-dialog";
 import { ArrowLeft, Eye, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { sanitizeRawHtml } from "@cms/lib/sanitize-html";
+import { sanitizeBannerHtml } from "@cms/lib/sanitize-html";
 import { PathsListInput } from "@cms/pages/admin/banners/PathsListInput";
 
 type BannerType = "TOP" | "MODAL" | "BOTTOM";
 type BannerFrequency = "ALWAYS" | "ONCE_PER_SESSION" | "DONT_SHOW_AGAIN";
 type BannerContentMode = "EDITOR" | "HTML";
+type ModalPosition =
+  | "TOP_LEFT" | "TOP_CENTER" | "TOP_RIGHT"
+  | "CENTER_LEFT" | "CENTER" | "CENTER_RIGHT"
+  | "BOTTOM_LEFT" | "BOTTOM_CENTER" | "BOTTOM_RIGHT";
+
+const MODAL_POSITION_GRID: ModalPosition[][] = [
+  ["TOP_LEFT", "TOP_CENTER", "TOP_RIGHT"],
+  ["CENTER_LEFT", "CENTER", "CENTER_RIGHT"],
+  ["BOTTOM_LEFT", "BOTTOM_CENTER", "BOTTOM_RIGHT"],
+];
+
+const MODAL_POSITION_LABEL: Record<ModalPosition, string> = {
+  TOP_LEFT: "Top left",
+  TOP_CENTER: "Top center",
+  TOP_RIGHT: "Top right",
+  CENTER_LEFT: "Center left",
+  CENTER: "Center",
+  CENTER_RIGHT: "Center right",
+  BOTTOM_LEFT: "Bottom left",
+  BOTTOM_CENTER: "Bottom center",
+  BOTTOM_RIGHT: "Bottom right",
+};
 
 function toDatetimeLocalString(date: string | null | undefined): string {
   if (!date) return "";
@@ -61,12 +83,13 @@ export default function BannerFormClient({
   const [paths, setPaths] = useState<string[]>([]);
   const [enabled, setEnabled] = useState(false);
   const [frequency, setFrequency] = useState<BannerFrequency>("ALWAYS");
-  const [contentMode, setContentMode] = useState<BannerContentMode>("EDITOR");
+  const [contentMode, setContentMode] = useState<BannerContentMode>("HTML");
   const [content, setContent] = useState<any>({ type: "doc", content: [{ type: "paragraph" }] });
   const [htmlContent, setHtmlContent] = useState("");
   const [htmlPreview, setHtmlPreview] = useState(false);
   const [modalDelaySeconds, setModalDelaySeconds] = useState("");
   const [modalScrollPercent, setModalScrollPercent] = useState("");
+  const [modalPosition, setModalPosition] = useState<ModalPosition>("CENTER");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [analytics, setAnalytics] = useState({ viewCount: 0, clickCount: 0, dismissCount: 0 });
@@ -90,6 +113,7 @@ export default function BannerFormClient({
         setHtmlContent(banner.htmlContent || "");
         setModalDelaySeconds(banner.modalDelaySeconds != null ? String(banner.modalDelaySeconds) : "");
         setModalScrollPercent(banner.modalScrollPercent != null ? String(banner.modalScrollPercent) : "");
+        setModalPosition(banner.modalPosition ?? "CENTER");
         setStartDate(toDatetimeLocalString(banner.startDate));
         setEndDate(toDatetimeLocalString(banner.endDate));
         setAnalytics({
@@ -134,6 +158,7 @@ export default function BannerFormClient({
         htmlContent: contentMode === "HTML" ? htmlContent : null,
         modalDelaySeconds: type === "MODAL" && modalDelaySeconds ? Number(modalDelaySeconds) : null,
         modalScrollPercent: type === "MODAL" && modalScrollPercent ? Number(modalScrollPercent) : null,
+        modalPosition,
         startDate: startDate ? new Date(startDate).toISOString() : null,
         endDate: endDate ? new Date(endDate).toISOString() : null,
       };
@@ -282,7 +307,7 @@ export default function BannerFormClient({
             ) : (
               <div className="rounded-lg border border-border overflow-hidden bg-muted/30">
                 <div className="px-3 py-2 bg-yellow-500/10 border-b border-yellow-500/30 text-xs text-yellow-700 dark:text-yellow-400">
-                  ⚠️ Inline <code className="bg-yellow-500/20 px-1 rounded">style</code> attributes and form elements will be removed for security.
+                  ⚠️ Inline styles and <code className="bg-yellow-500/20 px-1 rounded">&lt;style&gt;</code> blocks are kept — your own background, layout and hover states will work. Scripts, forms and inputs are removed for security.
                 </div>
                 <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
                   <span className="text-xs font-medium text-muted-foreground">Raw HTML</span>
@@ -297,8 +322,8 @@ export default function BannerFormClient({
                 </div>
                 {htmlPreview ? (
                   <div
-                    className="p-4 prose dark:prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: sanitizeRawHtml(htmlContent) }}
+                    className="p-4"
+                    dangerouslySetInnerHTML={{ __html: sanitizeBannerHtml(htmlContent) }}
                   />
                 ) : (
                   <textarea
@@ -362,7 +387,28 @@ export default function BannerFormClient({
               <p className="text-xs text-muted-foreground">{FREQUENCY_HELP[frequency]}</p>
             </div>
             {type === "MODAL" && (
-              <div className="space-y-3 rounded-lg border border-border/70 p-3 bg-muted/20">
+              <div className="space-y-4 rounded-lg border border-border/70 p-3 bg-muted/20">
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium">Position</Label>
+                  <div className="grid grid-cols-3 gap-1.5 max-w-[180px]">
+                    {MODAL_POSITION_GRID.flat().map((pos) => (
+                      <button
+                        key={pos}
+                        type="button"
+                        title={MODAL_POSITION_LABEL[pos]}
+                        onClick={() => setModalPosition(pos)}
+                        className={`aspect-square rounded-md border transition ${
+                          modalPosition === pos
+                            ? "border-primary bg-primary/20"
+                            : "border-border/70 bg-muted/30 hover:bg-muted/60"
+                        }`}
+                      >
+                        <span className="sr-only">{MODAL_POSITION_LABEL[pos]}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">{MODAL_POSITION_LABEL[modalPosition]}</p>
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Modal trigger — whichever fires first shows the popup. Leave both empty to show immediately.
                 </p>
