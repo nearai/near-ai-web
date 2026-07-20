@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEAR CMS — Stack Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f7f6f3;
+      --white:   #ffffff;
+      --border:  #e8e5df;
+      --text:    #1c1c1a;
+      --muted:   #8a877f;
+      --accent:  #d4622a;
+      --tag-bg:  #f0ede7;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 56px 24px 96px;
+    }
+
+    /* ── LANG ── */
+    .lang-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 40px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .lang-btn.active {
+      background: var(--text);
+      color: var(--white);
+    }
+
+    /* ── HEADER ── */
+    header { margin-bottom: 48px; }
+
+    .header-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 40px; }
+
+    .section-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    p strong { color: var(--text); font-weight: 500; }
+
+    /* ── LIST ── */
+    .clean-list {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .clean-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .clean-row:last-child { border-bottom: none; }
+
+    .row-label {
+      width: 110px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding-top: 2px;
+    }
+
+    .row-content {
+      flex: 1;
+    }
+
+    .row-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .row-desc {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    /* ── LANG ── */
+    [data-en], [data-es] { display: none; }
+    body.lang-en [data-en] { display: block; }
+    body.lang-es [data-es] { display: block; }
+    body.lang-en [data-en].i,
+    body.lang-es [data-es].i { display: inline; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body class="lang-en">
+
+<div class="page">
+
+  <div class="lang-bar">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-tag">NEAR CMS</div>
+    <h1>
+      <span data-en>Stack & Infrastructure</span>
+      <span data-es>Stack e Infraestructura</span>
+    </h1>
+    <p class="subtitle">
+      <span data-en>Why Railway, why Cloudflare R2, and what the system is built on.</span>
+      <span data-es>Por qué Railway, por qué Cloudflare R2, y en qué está construido el sistema.</span>
+    </p>
+  </header>
+
+  <hr />
+
+  <!-- WHY RAILWAY -->
+  <div class="section">
+    <div class="section-num">01</div>
+    <h2>
+      <span data-en>Why Railway</span>
+      <span data-es>Por qué Railway</span>
+    </h2>
+    <p>
+      <span data-en>
+        The CMS is a <strong>pnpm monorepo with 3 separate Next.js apps</strong> — each app needs its own server process, its own domain, and its own database. Railway handles all of this natively.
+      </span>
+      <span data-es>
+        El CMS es un <strong>monorepo pnpm con 3 apps Next.js independientes</strong> — cada app necesita su propio proceso de servidor, su propio dominio y su propia base de datos. Railway maneja todo esto de forma nativa.
+      </span>
+    </p>
+
+    <div class="clean-list">
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Monorepo</span>
+          <span data-es>Monorepo</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>Supports pnpm workspaces out of the box</span>
+            <span data-es>Soporta pnpm workspaces sin configuración</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>You point each Railway service at a different --filter and it builds only that app, sharing the Turborepo cache.</span>
+            <span data-es>Cada servicio de Railway apunta a un --filter distinto y construye solo esa app, compartiendo el caché de Turborepo.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Database</span>
+          <span data-es>Base de datos</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>Managed Postgres per service</span>
+            <span data-es>Postgres administrado por servicio</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>Each app gets its own isolated Postgres instance with one click. No external DB provider needed.</span>
+            <span data-es>Cada app obtiene su propia instancia de Postgres aislada con un click. No se necesita un proveedor externo de base de datos.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Deploys</span>
+          <span data-es>Deploys</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>Git-push deploys with zero config</span>
+            <span data-es>Deploys automáticos con git push</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>Push to main → Railway builds and deploys automatically. Migrations run before the app starts via Release Command.</span>
+            <span data-es>Push a main → Railway construye y despliega automáticamente. Las migraciones corren antes de que la app inicie vía Release Command.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Domains</span>
+          <span data-es>Dominios</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>Custom domains per service</span>
+            <span data-es>Dominios personalizados por servicio</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>Each of the 3 apps gets its own public URL — near-demo, near-ai, near-com — all running independently.</span>
+            <span data-es>Cada una de las 3 apps tiene su propia URL — near-demo, near-ai, near-com — corriendo de forma independiente.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- WHY R2 -->
+  <div class="section">
+    <div class="section-num">02</div>
+    <h2>
+      <span data-en>Why Cloudflare R2</span>
+      <span data-es>Por qué Cloudflare R2</span>
+    </h2>
+    <p>
+      <span data-en>
+        The CMS editor lets users upload images and media. That content needs to live somewhere persistent, publicly accessible, and affordable. <strong>R2 is S3-compatible</strong>, so it works with the existing AWS SDK integration without any code changes.
+      </span>
+      <span data-es>
+        El editor del CMS permite subir imágenes y archivos. Ese contenido necesita vivir en algún lugar persistente, públicamente accesible y económico. <strong>R2 es compatible con S3</strong>, por lo que funciona con la integración existente del AWS SDK sin cambios de código.
+      </span>
+    </p>
+
+    <div class="clean-list">
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Cost</span>
+          <span data-es>Costo</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>No egress fees</span>
+            <span data-es>Sin cargos por transferencia</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>Unlike AWS S3, Cloudflare R2 charges zero for data transfer out. You only pay for storage.</span>
+            <span data-es>A diferencia de AWS S3, Cloudflare R2 no cobra por la transferencia de datos. Solo pagas por almacenamiento.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>S3-compatible</span>
+          <span data-es>Compatible S3</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>Works with @aws-sdk/client-s3</span>
+            <span data-es>Funciona con @aws-sdk/client-s3</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>The CMS uses the AWS SDK for uploads. R2 plugs in by just changing the endpoint URL — no rewrite needed.</span>
+            <span data-es>El CMS usa el AWS SDK para subir archivos. R2 se conecta solo cambiando la URL del endpoint — sin reescribir código.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Public CDN</span>
+          <span data-es>CDN público</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">
+            <span data-en>Files served via Cloudflare's global network</span>
+            <span data-es>Archivos servidos desde la red global de Cloudflare</span>
+          </div>
+          <div class="row-desc">
+            <span data-en>Enabling public access on the bucket gives a URL that's already behind Cloudflare's CDN — fast worldwide.</span>
+            <span data-es>Activar el acceso público en el bucket da una URL que ya está detrás del CDN de Cloudflare — rápido en todo el mundo.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- TECH STACK -->
+  <div class="section">
+    <div class="section-num">03</div>
+    <h2>
+      <span data-en>Tech Stack</span>
+      <span data-es>Stack Técnico</span>
+    </h2>
+
+    <div class="clean-list">
+      <div class="clean-row">
+        <div class="row-label">Framework</div>
+        <div class="row-content">
+          <div class="row-title">Next.js 16</div>
+          <div class="row-desc">
+            <span data-en>App Router, TypeScript, ISR. 3 apps from a single monorepo.</span>
+            <span data-es>App Router, TypeScript, ISR. 3 apps desde un mismo monorepo.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">Monorepo</div>
+        <div class="row-content">
+          <div class="row-title">pnpm + Turborepo</div>
+          <div class="row-desc">
+            <span data-en>Shared workspace packages, parallel builds, and build cache.</span>
+            <span data-es>Paquetes compartidos, builds en paralelo y caché de construcción.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Shared CMS</span>
+          <span data-es>CMS compartido</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">@near/cms-core</div>
+          <div class="row-desc">
+            <span data-en>Admin UI, API routes, editor, and DB schema — shared across all 3 apps. Fix once, update everywhere.</span>
+            <span data-es>UI de admin, rutas API, editor y esquema de DB — compartidos entre las 3 apps. Corrige una vez, actualiza en todos lados.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Database</span>
+          <span data-es>Base de datos</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">PostgreSQL + Prisma</div>
+          <div class="row-desc">
+            <span data-en>One Postgres instance per app. Schema defined once in cms-core and shared.</span>
+            <span data-es>Una instancia de Postgres por app. El esquema se define una vez en cms-core y se comparte.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">Auth</div>
+        <div class="row-content">
+          <div class="row-title">NextAuth.js v5</div>
+          <div class="row-desc">
+            <span data-en>JWT sessions, credentials login. Roles: Admin, Editor, Viewer.</span>
+            <span data-es>Sesiones JWT, login por credenciales. Roles: Admin, Editor, Viewer.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">Editor</div>
+        <div class="row-content">
+          <div class="row-title">TipTap v3</div>
+          <div class="row-desc">
+            <span data-en>Block-based rich text editor. Content stored as JSON in Postgres.</span>
+            <span data-es>Editor de texto rico basado en bloques. Contenido guardado como JSON en Postgres.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">Styling</div>
+        <div class="row-content">
+          <div class="row-title">Tailwind CSS v4 + shadcn/ui</div>
+          <div class="row-desc">
+            <span data-en>Each app has its own public design. Admin UI uses a shared dark-mode stylesheet.</span>
+            <span data-es>Cada app tiene su propio diseño público. El admin usa una hoja de estilos en modo oscuro compartida.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">
+          <span data-en>Storage</span>
+          <span data-es>Archivos</span>
+        </div>
+        <div class="row-content">
+          <div class="row-title">Cloudflare R2</div>
+          <div class="row-desc">
+            <span data-en>Media uploads from the CMS editor. S3-compatible, served via Cloudflare CDN.</span>
+            <span data-es>Subida de archivos desde el editor del CMS. Compatible con S3, servido vía CDN de Cloudflare.</span>
+          </div>
+        </div>
+      </div>
+      <div class="clean-row">
+        <div class="row-label">Email</div>
+        <div class="row-content">
+          <div class="row-title">Resend</div>
+          <div class="row-desc">
+            <span data-en>Transactional email for password reset flows.</span>
+            <span data-es>Email transaccional para flujos de reset de contraseña.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>NEAR CMS</span>
+    <span>2026</span>
+  </footer>
+
+</div>
+
+<script>
+  function setLang(lang) {
+    document.body.className = 'lang-' + lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.lang-btn[onclick*="' + lang + '"]').classList.add('active');
+  }
+</script>
+
+</body>
+</html>

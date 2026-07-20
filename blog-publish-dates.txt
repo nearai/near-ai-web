@@ -1,0 +1,25 @@
+Blog Post Original Publish Dates
+=================================
+Source: provided by team on 2026-06-30
+Purpose: reference for DB correction — all posts were imported with
+         publishedAt = 2026-06-29 (import date), correct dates are below.
+
+Title                                                                                                    | Correct publishedAt
+---------------------------------------------------------------------------------------------------------+---------------------
+Building Next-Gen NEAR AI Infrastructure with TEEs                                                       | 2025-01-19
+Announcing Proof of Response                                                                             | 2025-02-17
+Decentralized Confidential Machine Learning: A Business Model for User-Owned AI                          | 2025-03-18
+Introducing NEAR AI Cloud & Private Chat                                                                 | 2025-12-03
+ADI Foundation and Datrics Partner With NEAR on TravAI, an AI and Blockchain-Powered Travel Platform    | 2025-12-05
+OpenMind Integrates NEAR AI Cloud to Bring Verifiable Privacy to Home Robotics                          | 2025-12-17
+NEAR AI Joins NVIDIA Inception Program to Accelerate Enterprise-Grade, Verifiable AI                    | 2026-01-13
+NEAR AI Release 26.1: New Models, Crypto Payments, and Team Controls                                    | 2026-01-20
+OpenClaw Is Now Available on NEAR AI Cloud                                                               | 2026-02-02
+NEAR AI Release 26.2: Anonymous access to ChatGPT 5.2, Claude Sonnet 4.5 and Gemini 3 Pro Preview       | 2026-02-04
+Introducing NEAR AI Agent Market                                                                         | 2026-02-04
+NEAR AI Launches IronClaw, Confidential GPU Marketplace, and Multimodal Confidential Inference          | 2026-02-23
+Venice Is Now Verifiably Private With NEAR AI                                                            | 2026-03-19
+NEAR AI and The Times of India Group's Abound Are Bringing Agentic Payments to Cross-Border Finance     | 2026-04-02
+AI Agents Have a Security Problem. We're Fixing It.                                                      | 2026-05-07
+Government of Bermuda and NEAR AI Partner to Deploy AI-Powered Public Services                          | 2026-05-13
+NEAR AI Brings Private USDC Payments to the Agentic Economy                                             | 2026-05-14

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEAR CMS — Deploy Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #f7f6f3;
+      --white:    #ffffff;
+      --border:   #e8e5df;
+      --text:     #1c1c1a;
+      --muted:    #8a877f;
+      --accent:   #d4622a;
+      --tag-bg:   #f0ede7;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 56px 24px 96px;
+    }
+
+    /* ── LANG TOGGLE ── */
+    .lang-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 40px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: all 0.15s;
+    }
+
+    .lang-btn.active {
+      background: var(--text);
+      color: var(--white);
+    }
+
+    /* ── HEADER ── */
+    header {
+      margin-bottom: 52px;
+    }
+
+    .header-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    /* ── DIVIDER ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-bottom: 44px;
+    }
+
+    .section-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    p {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    /* ── APPS GRID ── */
+    .apps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 560px) { .apps { grid-template-columns: 1fr; } }
+
+    .app-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .app-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .app-line {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 2;
+    }
+
+    .app-line span {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* ── STACK LIST ── */
+    .stack-list {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .stack-row {
+      display: flex;
+      align-items: baseline;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+
+    .stack-row:last-child { border-bottom: none; }
+
+    .stack-label {
+      width: 120px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .stack-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .stack-note {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 300;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    /* ── ENV TABLE ── */
+    .env-section { margin-bottom: 28px; }
+
+    .env-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+
+    .env-table {
+      width: 100%;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      border-collapse: collapse;
+    }
+
+    .env-table thead tr {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .env-table th {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 9px 14px;
+      text-align: left;
+    }
+
+    .env-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    .env-table tr:last-child td { border-bottom: none; }
+
+    .env-key {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .env-desc {
+      color: var(--text);
+      font-size: 12.5px;
+    }
+
+    .env-example {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    .pill-req { background: #fde8df; color: #b84a1a; }
+    .pill-opt { background: var(--tag-bg); color: var(--muted); }
+    .pill-auto { background: #eaf5ea; color: #3a8a3a; }
+
+    /* ── NOTE BOX ── */
+    .note {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 14px 0;
+      line-height: 1.65;
+    }
+
+    .note strong { color: var(--text); }
+
+    /* ── CODE BLOCK ── */
+    .code-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+
+    .code-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .code-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .copy-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn.ok { color: #3a8a3a; border-color: #b8dfb8; background: #eaf5ea; }
+
+    pre {
+      padding: 18px;
+      overflow-x: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .c  { color: #b0a99a; } /* comment */
+    .k  { color: var(--accent); } /* key */
+    .v  { color: #2e6e4e; } /* value */
+    .s  { color: #7a7060; font-weight: 600; } /* section */
+
+    /* ── CHECKLIST ── */
+    .checklist {
+      list-style: none;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .checklist li:last-child { border-bottom: none; }
+
+    .check-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 2px;
+      background: var(--bg);
+    }
+
+    .check-main {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .check-sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 300;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── LANG VISIBILITY ── */
+    [data-en], [data-es] { display: none; }
+    body.lang-en [data-en] { display: block; }
+    body.lang-es [data-es] { display: block; }
+    body.lang-en [data-en].inline,
+    body.lang-es [data-es].inline { display: inline; }
+    body.lang-en [data-en].flex,
+    body.lang-es [data-es].flex { display: flex; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body class="lang-en">
+
+<div class="page">
+
+  <!-- Lang toggle -->
+  <div class="lang-bar">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-tag">NEAR CMS · Deploy Reference</div>
+    <h1>
+      <span data-en>Deployment Guide</span>
+      <span data-es>Guía de Despliegue</span>
+    </h1>
+    <p class="subtitle">
+      <span data-en>Railway + Cloudflare R2 · pnpm monorepo</span>
+      <span data-es>Railway + Cloudflare R2 · pnpm monorepo</span>
+    </p>
+  </header>
+
+  <hr />
+
+  <!-- 1. OVERVIEW -->
+  <div class="section">
+    <div class="section-num">01</div>
+    <h2>
+      <span data-en>What's being deployed</span>
+      <span data-es>Qué se despliega</span>
+    </h2>
+    <p>
+      <span data-en>3 independent Next.js apps from a single monorepo. Each app has its own database and shares a common CMS package.</span>
+      <span data-es>3 apps independientes de Next.js desde un mismo monorepo. Cada app tiene su propia base de datos y comparten un paquete CMS común.</span>
+    </p>
+
+    <div class="apps">
+      <div class="app-card">
+        <div class="app-name"><span class="dot" style="background:#5b8dee;"></span>near-demo</div>
+        <div class="app-line">
+          <span data-en><span>Port</span> 3000</span>
+          <span data-es><span>Puerto</span> 3000</span>
+        </div>
+        <div class="app-line"><span data-en class="inline">Filter:</span><span data-es class="inline">Filtro:</span> <span>@near/near-demo</span></div>
+        <div class="app-line">DB: <span>Postgres</span></div>
+      </div>
+      <div class="app-card">
+        <div class="app-name"><span class="dot" style="background:#9b72d4;"></span>near-ai</div>
+        <div class="app-line">
+          <span data-en><span>Port</span> 3001</span>
+          <span data-es><span>Puerto</span> 3001</span>
+        </div>
+        <div class="app-line"><span data-en class="inline">Filter:</span><span data-es class="inline">Filtro:</span> <span>@near/near-ai</span></div>
+        <div class="app-line">DB: <span>Postgres</span></div>
+      </div>
+      <div class="app-card">
+        <div class="app-name"><span class="dot" style="background:#4aaa76;"></span>near-com</div>
+        <div class="app-line">
+          <span data-en><span>Port</span> 3002</span>
+          <span data-es><span>Puerto</span> 3002</span>
+        </div>
+        <div class="app-line"><span data-en class="inline">Filter:</span><span data-es class="inline">Filtro:</span> <span>@near/near-com</span></div>
+        <div class="app-line">DB: <span>Postgres</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 2. TECH STACK -->
+  <div class="section">
+    <div class="section-num">02</div>
+    <h2>
+      <span data-en>Tech Stack</span>
+      <span data-es>Stack Técnico</span>
+    </h2>
+
+    <div class="stack-list">
+      <div class="stack-row">
+        <div class="stack-label">Framework</div>
+        <div class="stack-value">Next.js 16</div>
+        <div class="stack-note">App Router · TypeScript</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">Monorepo</div>
+        <div class="stack-value">pnpm + Turborepo</div>
+        <div class="stack-note">
+          <span data-en>Shared build cache</span>
+          <span data-es>Caché de build compartida</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">Styling</div>
+        <div class="stack-value">Tailwind CSS v4</div>
+        <div class="stack-note">shadcn/ui · new-york</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">
+          <span data-en>Database</span>
+          <span data-es>Base de datos</span>
+        </div>
+        <div class="stack-value">PostgreSQL</div>
+        <div class="stack-note">Prisma ORM · 3 <span data-en class="inline">instances</span><span data-es class="inline">instancias</span></div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">Auth</div>
+        <div class="stack-value">NextAuth.js v5</div>
+        <div class="stack-note">JWT · Credentials</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">
+          <span data-en>Media</span>
+          <span data-es>Archivos</span>
+        </div>
+        <div class="stack-value">Cloudflare R2</div>
+        <div class="stack-note">S3-compatible</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">Email</div>
+        <div class="stack-value">Resend</div>
+        <div class="stack-note">
+          <span data-en>Password reset</span>
+          <span data-es>Reset de contraseña</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">Editor</div>
+        <div class="stack-value">TipTap v3</div>
+        <div class="stack-note">Block-based · JSON</div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 3. CLOUDFLARE R2 SETUP -->
+  <div class="section">
+    <div class="section-num">03</div>
+    <h2>Cloudflare R2 — Setup</h2>
+    <p>
+      <span data-en>All 3 apps share the same R2 bucket for media uploads.</span>
+      <span data-es>Las 3 apps comparten el mismo bucket de R2 para subir archivos.</span>
+    </p>
+
+    <div class="note">
+      <strong data-en>Steps in Cloudflare Dashboard:</strong>
+      <strong data-es>Pasos en el Cloudflare Dashboard:</strong>
+      <span data-en>
+        <br/>1. Go to <strong>R2 → Create bucket</strong> and name it (e.g. <code>near-cms-media</code>).<br/>
+        2. Under <strong>Settings → Public Access</strong>, enable the public URL or add a Custom Domain.<br/>
+        3. Go to <strong>Manage R2 API Tokens → Create API Token</strong> with <strong>Object Read & Write</strong> permission.<br/>
+        4. Copy the <strong>Access Key ID</strong>, <strong>Secret Access Key</strong>, and <strong>Endpoint</strong> — you'll need them for Railway.
+      </span>
+      <span data-es>
+        <br/>1. Ve a <strong>R2 → Create bucket</strong> y nómbralo (ej. <code>near-cms-media</code>).<br/>
+        2. En <strong>Settings → Public Access</strong>, activa la URL pública o agrega un Custom Domain.<br/>
+        3. Ve a <strong>Manage R2 API Tokens → Create API Token</strong> con permiso <strong>Object Read & Write</strong>.<br/>
+        4. Copia el <strong>Access Key ID</strong>, <strong>Secret Access Key</strong> y <strong>Endpoint</strong> — los necesitarás en Railway.
+      </span>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 4. ENV VARS -->
+  <div class="section">
+    <div class="section-num">04</div>
+    <h2>
+      <span data-en>Environment Variables</span>
+      <span data-es>Variables de Entorno</span>
+    </h2>
+    <p>
+      <span data-en>Set these in each Railway service. Only <code>DATABASE_URL</code> and <code>NEXTAUTH_URL</code> differ per app.</span>
+      <span data-es>Configura estas en cada servicio de Railway. Solo <code>DATABASE_URL</code> y <code>NEXTAUTH_URL</code> cambian por app.</span>
+    </p>
+
+    <!-- Core -->
+    <div class="env-section">
+      <div class="env-section-title">
+        <span data-en>Core</span>
+        <span data-es>Core</span>
+      </div>
+      <table class="env-table">
+        <thead>
+          <tr>
+            <th><span data-en>Variable</span><span data-es>Variable</span></th>
+            <th><span data-en>Description</span><span data-es>Descripción</span></th>
+            <th><span data-en>Example</span><span data-es>Ejemplo</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="env-key">DATABASE_URL</span></td>
+            <td class="env-desc">
+              <span data-en>Postgres connection string. Railway generates this automatically when you add a Postgres plugin.</span>
+              <span data-es>Conexión a Postgres. Railway la genera automáticamente al añadir el plugin de Postgres.</span>
+            </td>
+            <td><span class="env-example">postgresql://user:pass@host/db</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">NEXTAUTH_URL</span></td>
+            <td class="env-desc">
+              <span data-en>Public URL of the service. Different for each app.</span>
+              <span data-es>URL pública del servicio. Diferente para cada app.</span>
+            </td>
+            <td><span class="env-example">https://near-ai.up.railway.app</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">AUTH_SECRET</span></td>
+            <td class="env-desc">
+              <span data-en>Random secret for JWT sessions. Use the same value across all 3 apps.</span>
+              <span data-es>Secret aleatorio para sesiones JWT. Usa el mismo valor para las 3 apps.</span>
+            </td>
+            <td><span class="env-example">openssl rand -base64 32</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- R2 -->
+    <div class="env-section">
+      <div class="env-section-title">Cloudflare R2</div>
+      <table class="env-table">
+        <thead>
+          <tr>
+            <th><span data-en>Variable</span><span data-es>Variable</span></th>
+            <th><span data-en>Description</span><span data-es>Descripción</span></th>
+            <th><span data-en>Example</span><span data-es>Ejemplo</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="env-key">S3_ENDPOINT</span></td>
+            <td class="env-desc">
+              <span data-en>R2 endpoint URL. Found in your bucket settings.</span>
+              <span data-es>URL del endpoint de R2. Se encuentra en los settings del bucket.</span>
+            </td>
+            <td><span class="env-example">https://&lt;ID&gt;.r2.cloudflarestorage.com</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">S3_REGION</span></td>
+            <td class="env-desc">
+              <span data-en>Always <code>auto</code> for R2.</span>
+              <span data-es>Siempre <code>auto</code> para R2.</span>
+            </td>
+            <td><span class="env-example">auto</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">S3_BUCKET</span></td>
+            <td class="env-desc">
+              <span data-en>Name of your R2 bucket.</span>
+              <span data-es>Nombre del bucket en R2.</span>
+            </td>
+            <td><span class="env-example">near-cms-media</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">S3_ACCESS_KEY_ID</span></td>
+            <td class="env-desc">
+              <span data-en>From R2 API Token creation.</span>
+              <span data-es>Del token creado en R2.</span>
+            </td>
+            <td><span class="env-example">abc123abc123...</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">S3_SECRET_ACCESS_KEY</span></td>
+            <td class="env-desc">
+              <span data-en>From R2 API Token creation. Only shown once.</span>
+              <span data-es>Del token creado en R2. Solo se muestra una vez.</span>
+            </td>
+            <td><span class="env-example">xyz789xyz789...</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">R2_PUBLIC_URL</span></td>
+            <td class="env-desc">
+              <span data-en>Public URL where uploaded files are served. Enable public access in R2 first.</span>
+              <span data-es>URL pública desde donde se sirven los archivos. Activa el acceso público en R2 primero.</span>
+            </td>
+            <td><span class="env-example">https://pub-xxx.r2.dev</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Email -->
+    <div class="env-section">
+      <div class="env-section-title">Email (Resend)</div>
+      <table class="env-table">
+        <thead>
+          <tr>
+            <th><span data-en>Variable</span><span data-es>Variable</span></th>
+            <th><span data-en>Description</span><span data-es>Descripción</span></th>
+            <th><span data-en>Example</span><span data-es>Ejemplo</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="env-key">RESEND_API_KEY</span></td>
+            <td class="env-desc">
+              <span data-en>API key from resend.com. Used for password reset emails.</span>
+              <span data-es>API key de resend.com. Para emails de reset de contraseña.</span>
+            </td>
+            <td><span class="env-example">re_xxxxxxxxxx</span></td>
+            <td><span class="pill pill-req">req</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Airtable -->
+    <div class="env-section">
+      <div class="env-section-title">Airtable (<span data-en class="inline">optional</span><span data-es class="inline">opcional</span>)</div>
+      <table class="env-table">
+        <thead>
+          <tr>
+            <th><span data-en>Variable</span><span data-es>Variable</span></th>
+            <th><span data-en>Description</span><span data-es>Descripción</span></th>
+            <th><span data-en>Example</span><span data-es>Ejemplo</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="env-key">AIRTABLE_API_KEY</span></td>
+            <td class="env-desc"><span data-en>Personal access token from Airtable.</span><span data-es>Token de acceso personal de Airtable.</span></td>
+            <td><span class="env-example">patXXXXXXXXXX</span></td>
+            <td><span class="pill pill-opt">opt</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">AIRTABLE_BASE_ID</span></td>
+            <td class="env-desc"><span data-en>ID of your Airtable base.</span><span data-es>ID de la base en Airtable.</span></td>
+            <td><span class="env-example">appXXXXXXXXXX</span></td>
+            <td><span class="pill pill-opt">opt</span></td>
+          </tr>
+          <tr>
+            <td><span class="env-key">AIRTABLE_ECOSYSTEM_TABLE</span></td>
+            <td class="env-desc"><span data-en>Name of the ecosystem table.</span><span data-es>Nombre de la tabla del ecosistema.</span></td>
+            <td><span class="env-example">Ecosystem Projects</span></td>
+            <td><span class="pill pill-opt">opt</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 5. RAILWAY CONFIG -->
+  <div class="section">
+    <div class="section-num">05</div>
+    <h2>
+      <span data-en>Railway Build Config</span>
+      <span data-es>Configuración de Build en Railway</span>
+    </h2>
+    <p>
+      <span data-en>In each Railway service, set the build and start commands using the app's <code>--filter</code> name.</span>
+      <span data-es>En cada servicio de Railway, configura los comandos de build y start con el <code>--filter</code> de la app.</span>
+    </p>
+
+    <div class="stack-list">
+      <div class="stack-row">
+        <div class="stack-label">Build</div>
+        <div class="stack-value" style="font-family:'DM Mono',monospace; font-size:12px;">pnpm turbo run build --filter=@near/near-ai</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">Start</div>
+        <div class="stack-value" style="font-family:'DM Mono',monospace; font-size:12px;">pnpm --filter @near/near-ai run start</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-label">
+          <span data-en>Release Cmd</span>
+          <span data-es>Release Cmd</span>
+        </div>
+        <div class="stack-value" style="font-family:'DM Mono',monospace; font-size:12px;">pnpm --filter @near/cms-core exec prisma migrate deploy</div>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:12px;">
+      <strong data-en>Release Command</strong><strong data-es>Release Command</strong>
+      <span data-en> runs before the app starts on each deploy and automatically applies any pending DB migrations.</span>
+      <span data-es> se ejecuta antes de que la app inicie en cada deploy y aplica automáticamente las migraciones pendientes de la base de datos.</span>
+    </div>
+
+    <div class="code-wrap" style="margin-top:16px;">
+      <div class="code-top">
+        <span class="code-name">.env.local — <span data-en class="inline">template</span><span data-es class="inline">plantilla</span></span>
+        <button class="copy-btn" onclick="copyEl(this, 'env-tpl')">
+          <span data-en class="inline">Copy</span><span data-es class="inline">Copiar</span>
+        </button>
+      </div>
+      <pre id="env-tpl"><span class="c"># Core</span>
+<span class="k">DATABASE_URL</span>=postgresql://user:pass@host:5432/dbname
+<span class="k">NEXTAUTH_URL</span>=https://near-ai.up.railway.app
+<span class="k">AUTH_SECRET</span>=<span class="v">run: openssl rand -base64 32</span>
+
+<span class="c"># Cloudflare R2</span>
+<span class="k">S3_ENDPOINT</span>=https://&lt;ACCOUNT_ID&gt;.r2.cloudflarestorage.com
+<span class="k">S3_REGION</span>=auto
+<span class="k">S3_BUCKET</span>=near-cms-media
+<span class="k">S3_ACCESS_KEY_ID</span>=your-r2-access-key-id
+<span class="k">S3_SECRET_ACCESS_KEY</span>=your-r2-secret-access-key
+<span class="k">R2_PUBLIC_URL</span>=https://pub-xxxx.r2.dev
+
+<span class="c"># Email</span>
+<span class="k">RESEND_API_KEY</span>=re_xxxxxxxxxxxx
+
+<span class="c"># Airtable (optional)</span>
+<span class="k">AIRTABLE_API_KEY</span>=patXXXXXXXXXX
+<span class="k">AIRTABLE_BASE_ID</span>=appXXXXXXXXXX
+<span class="k">AIRTABLE_ECOSYSTEM_TABLE</span>=Ecosystem Projects</pre>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 6. CHECKLIST -->
+  <div class="section">
+    <div class="section-num">06</div>
+    <h2>
+      <span data-en>Pre-Deploy Checklist</span>
+      <span data-es>Checklist Antes de Desplegar</span>
+    </h2>
+
+    <ul class="checklist">
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>R2 bucket created with public access enabled</span><span data-es>Bucket de R2 creado con acceso público activo</span></div>
+          <span class="check-sub"><span data-en>R2 → your bucket → Settings → Public Access</span><span data-es>R2 → tu bucket → Settings → Public Access</span></span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>R2 API Token generated with Read & Write permissions</span><span data-es>API Token de R2 generado con permisos Read & Write</span></div>
+          <span class="check-sub"><span data-en>Save the Access Key ID and Secret — they're shown once</span><span data-es>Guarda el Access Key ID y Secret — solo se muestran una vez</span></span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>3 Railway services created (one per app)</span><span data-es>3 servicios en Railway creados (uno por app)</span></div>
+          <span class="check-sub"><span data-en>Each service needs its own Postgres plugin</span><span data-es>Cada servicio necesita su propio plugin de Postgres</span></span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>All environment variables set in each Railway service</span><span data-es>Todas las variables de entorno configuradas en cada servicio</span></div>
+          <span class="check-sub"><span data-en>DATABASE_URL and NEXTAUTH_URL are different per app — the rest are shared</span><span data-es>DATABASE_URL y NEXTAUTH_URL son distintas por app — el resto son iguales</span></span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>Build command uses the correct --filter for each service</span><span data-es>El build command usa el --filter correcto para cada servicio</span></div>
+          <span class="check-sub">pnpm turbo run build --filter=@near/near-demo | near-ai | near-com</span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>Release Command configured to run DB migrations automatically</span><span data-es>Release Command configurado para correr las migraciones automáticamente</span></div>
+          <span class="check-sub">pnpm --filter @near/cms-core exec prisma migrate deploy</span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>AUTH_SECRET is a new random value (not the dev default)</span><span data-es>AUTH_SECRET es un valor aleatorio nuevo (no el de desarrollo)</span></div>
+          <span class="check-sub"><span data-en>Same value across all 3 apps</span><span data-es>El mismo valor para las 3 apps</span></span>
+        </div>
+      </li>
+      <li>
+        <div class="check-box"></div>
+        <div>
+          <div class="check-main"><span data-en>Admin password changed from default after first deploy</span><span data-es>Contraseña de admin cambiada desde el default después del primer deploy</span></div>
+          <span class="check-sub"><span data-en>Default: admin@example.com / password</span><span data-es>Default: admin@example.com / password</span></span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <footer>
+    <span>NEAR CMS</span>
+    <span>Railway · Cloudflare R2 · 2026</span>
+  </footer>
+
+</div>
+
+<script>
+  function setLang(lang) {
+    document.body.className = 'lang-' + lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.lang-btn[onclick*="' + lang + '"]').classList.add('active');
+  }
+
+  function copyEl(btn, id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const prev = btn.innerHTML;
+      btn.innerHTML = '✓';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.innerHTML = prev; btn.classList.remove('ok'); }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

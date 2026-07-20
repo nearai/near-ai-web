@@ -138,6 +138,12 @@ JWT strategy, 30-day sessions. Roles: **ADMIN** (full access) · **EDITOR** (own
 - **Page Management** — DB model exists, admin UI is a stub
 - **Notification emails** — Only password reset email exists
 
+## Contexto del proyecto (Regenta/Aura)
+
+Al iniciar una sesión en este repo, ANTES de explorar archivos corre `/aura near-ai-web` —
+trae resumen, arquitectura, estructura, decisiones y estado en ~1-2k tokens.
+Tras cada tarea larga: `/aura checkpoint`. Al terminar la sesión: `/aura close`.
+
 ---
 
 *Last updated: Phase 5 (Standalone near-ai — single app at root + cms-core shared package)*

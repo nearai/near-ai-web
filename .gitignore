@@ -33,5 +33,11 @@ Thumbs.db
 # Production
 .vercel/
 
+# Turbo
+.turbo/
+
+# TypeScript
+*.tsbuildinfo
+
 # Prisma
 # prisma/migrations/ — migrations are version controlled intentionally

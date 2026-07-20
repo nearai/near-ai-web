@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,12 +25,22 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@near/cms-core/*": ["./packages/cms-core/*"],
-      "@cms/*": ["./packages/cms-core/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@near/cms-core/*": [
+        "./packages/cms-core/*"
+      ],
+      "@cms/*": [
+        "./packages/cms-core/*"
+      ]
     },
     "incremental": true,
-    "plugins": [{ "name": "next" }]
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
@@ -39,7 +53,11 @@
     "lib/**/*.ts",
     "proxy.ts",
     "packages/cms-core/types/**/*.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "apps"]
+  "exclude": [
+    "node_modules",
+    "apps"
+  ]
 }
