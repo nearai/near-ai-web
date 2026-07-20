@@ -5,29 +5,39 @@ import AnalyticsScripts from "@/components/site/AnalyticsScripts";
 
 export const revalidate = 60;
 
-export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+async function getActiveBanners() {
   const now = new Date();
-  const banners = await prisma.banner.findMany({
-    where: {
-      enabled: true,
-      AND: [
-        { OR: [{ startDate: null }, { startDate: { lte: now } }] },
-        { OR: [{ endDate: null }, { endDate: { gte: now } }] },
-      ],
-    },
-    orderBy: { createdAt: "asc" },
-    select: {
-      id: true,
-      type: true,
-      paths: true,
-      frequency: true,
-      contentMode: true,
-      content: true,
-      htmlContent: true,
-      modalDelaySeconds: true,
-      modalScrollPercent: true,
-    },
-  });
+  try {
+    return await prisma.banner.findMany({
+      where: {
+        enabled: true,
+        AND: [
+          { OR: [{ startDate: null }, { startDate: { lte: now } }] },
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+        ],
+      },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        type: true,
+        paths: true,
+        frequency: true,
+        contentMode: true,
+        content: true,
+        htmlContent: true,
+        modalDelaySeconds: true,
+        modalScrollPercent: true,
+      },
+    });
+  } catch (error) {
+    // Never let a DB hiccup (e.g. unreachable during static build) break page rendering.
+    console.error("Failed to fetch active banners:", error);
+    return [];
+  }
+}
+
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const banners = await getActiveBanners();
 
   return (
     <LenisProvider>
