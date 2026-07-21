@@ -107,11 +107,7 @@ export default function EditPostClient({ userRole = "EDITOR" }: { userRole?: str
         setOgImage(post.ogImage || "");
         setSelectedCategoryIds((post.categories ?? []).map((c: any) => c.id));
         setSelectedTagIds((post.tags ?? []).map((t: any) => t.id));
-        // Only pre-fill publishedAt if it's a future date (explicitly scheduled)
-        const storedDate = post.publishedAt ? new Date(post.publishedAt) : null;
-        setPublishedAt(storedDate && storedDate > new Date()
-          ? toDatetimeLocalString(post.publishedAt)
-          : "");
+        setPublishedAt(toDatetimeLocalString(post.publishedAt));
         setHeroBgColor(expandHexColor(post.heroBgColor || "#cfcfcf"));
         setHeroBgImage(post.heroBgImage || "");
         setExcludeFromSitemap(post.excludeFromSitemap === true);
@@ -358,10 +354,11 @@ export default function EditPostClient({ userRole = "EDITOR" }: { userRole?: str
           publishedAt: (() => {
             const now = new Date();
             const parsedDate = publishedAt ? new Date(publishedAt) : null; // no "Z" → JS interprets as local time → correct UTC
-            if (finalStatus === "PUBLISHED") {
-              // If published date is in future, publish now instead
-              return parsedDate && parsedDate > now ? now.toISOString() : (parsedDate ?? now).toISOString();
-            }
+            // If scheduled in the future but the user hits Publish directly, publish now instead.
+            if (finalStatus === "PUBLISHED" && parsedDate && parsedDate > now) return now.toISOString();
+            // Otherwise, send the date as-is (unchanged if the user didn't touch the field) or
+            // omit it entirely — never fall back to "now", or the server would overwrite the
+            // post's original publishedAt with the save time.
             return parsedDate ? parsedDate.toISOString() : undefined;
           })(),
           excludeFromSitemap,

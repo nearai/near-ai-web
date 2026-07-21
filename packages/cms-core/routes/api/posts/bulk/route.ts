@@ -34,15 +34,19 @@ export async function POST(req: NextRequest) {
 
   if (action === "delete") {
     await prisma.post.deleteMany({ where });
-  } else {
-    const status = action === "publish" ? "PUBLISHED" : "ARCHIVED";
+  } else if (action === "publish") {
+    // Only stamp publishedAt for posts being published for the first time —
+    // republishing (e.g. an archived post) must keep its original date.
     await prisma.post.updateMany({
-      where,
-      data: {
-        status,
-        ...(action === "publish" ? { publishedAt: new Date() } : {}),
-      },
+      where: { ...where, publishedAt: null },
+      data: { status: "PUBLISHED", publishedAt: new Date() },
     });
+    await prisma.post.updateMany({
+      where: { ...where, publishedAt: { not: null } },
+      data: { status: "PUBLISHED" },
+    });
+  } else {
+    await prisma.post.updateMany({ where, data: { status: "ARCHIVED" } });
   }
 
   return NextResponse.json({ success: true });
