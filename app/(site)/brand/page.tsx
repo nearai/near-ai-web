@@ -88,7 +88,7 @@ export default function BrandPage() {
               Everything below is the working essential. The complete system (logo construction, layout ratios, the full palette) is one download away.
             </p>
             <div className="flex flex-wrap gap-3.5 items-center mb-10">
-              <BrandPillLink href={BRAND_GUIDELINES_PDF} download label="Download full guidelines" badge="PDF" variant="solid" />
+              <BrandPillLink href={BRAND_GUIDELINES_PDF} target="_blank" rel="noopener noreferrer" label="Download full guidelines" badge="PDF" variant="solid" />
               <BrandPillLink href="#logos" label="Jump to assets ↓" variant="dark" />
             </div>
             <div className="flex flex-wrap gap-6">
