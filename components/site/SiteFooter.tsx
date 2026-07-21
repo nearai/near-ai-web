@@ -28,6 +28,7 @@ const NAV_COLS = [
     links: [
       { label: "Home", href: "/" },
       { label: "About us", href: "/company" },
+      { label: "Brand", href: "/brand" },
       { label: "Careers", href: "https://job-boards.eu.greenhouse.io/nearai", target: "_blank" },
     ],
   },

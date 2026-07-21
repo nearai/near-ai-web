@@ -4,6 +4,7 @@ import BrandLogoCard from "@/components/site/brand/BrandLogoCard";
 import CopyableSwatch from "@/components/site/brand/CopyableSwatch";
 
 const LOGO_KIT_ZIP = "/branding/near-ai-logo-kit.zip";
+const BRAND_GUIDELINES_PDF = "https://cms-image-exposer.near.ai/uploads/1d5604a3-d67a-4fdc-8c08-5816190c6d7d.pdf";
 
 const SECTION_LINKS = [
   { href: "#logos", label: "Logos" },
@@ -43,7 +44,6 @@ const SECONDARY_COLORS = [
   { name: "Dark Grey", hex: "#272727" },
   { name: "Grey", hex: "#A7A7A7" },
   { name: "Sky", hex: "#83DCFF" },
-  { name: "Deep Blue", hex: "#2385C7" },
 ];
 
 const GREYSCALE = ["#525252", "#858585", "#A7A7A7", "#B4B4B4", "#D5D5D5", "#E6E6E6", "#EEEEEB", "#FDFDFD"];
@@ -74,7 +74,7 @@ export default function BrandPage() {
 
           <div className="flex flex-col flex-1 justify-center py-14 lg:py-20 max-w-[880px]">
             <div className="font-mono text-[14px] tracking-[0.14em] uppercase text-[#0072C9] mb-8">
-              NEAR AI · Brand guidelines V01
+              NEAR AI · Brand guidelines V 2.0
             </div>
             <h1 className="font-medium [font-size:var(--font-size-h1)] leading-[0.98] tracking-[-0.03em] text-[#101010] mb-7">
               The NEAR AI brand,
@@ -88,7 +88,7 @@ export default function BrandPage() {
               Everything below is the working essential. The complete system (logo construction, layout ratios, the full palette) is one download away.
             </p>
             <div className="flex flex-wrap gap-3.5 items-center mb-10">
-              <BrandPillLink href={LOGO_KIT_ZIP} download label="Download full guidelines" badge="PDF" variant="solid" />
+              <BrandPillLink href={BRAND_GUIDELINES_PDF} download label="Download full guidelines" badge="PDF" variant="solid" />
               <BrandPillLink href="#logos" label="Jump to assets ↓" variant="dark" />
             </div>
             <div className="flex flex-wrap gap-6">
@@ -340,8 +340,8 @@ export default function BrandPage() {
                 </p>
               </div>
               <div className="flex flex-col gap-3.5 items-start">
-                <BrandPillLink href={LOGO_KIT_ZIP} download label="Download logo kit (ZIP)" variant="light" />
-                <span className="font-mono text-[14px] tracking-[0.08em] uppercase text-white/55">SVG + PNG · 13 marks · v0.1 2026</span>
+                <BrandPillLink href={LOGO_KIT_ZIP} download label="Download logo kit" variant="light" />
+                <span className="font-mono text-[14px] tracking-[0.08em] uppercase text-white/55">SVG + PNG</span>
               </div>
             </div>
           </div>
