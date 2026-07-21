@@ -3,7 +3,7 @@ import BrandPillLink from "@/components/site/brand/BrandPillLink";
 import BrandLogoCard from "@/components/site/brand/BrandLogoCard";
 import CopyableSwatch from "@/components/site/brand/CopyableSwatch";
 
-const LOGO_KIT_ZIP = "/branding/near-ai-logo-kit.zip";
+const LOGO_KIT_ZIP = "https://cms-image-exposer.near.ai/uploads/0c5b0796-9e79-4eef-8fd6-91503a1e23df.zip";
 const BRAND_GUIDELINES_PDF = "https://cms-image-exposer.near.ai/uploads/1d5604a3-d67a-4fdc-8c08-5816190c6d7d.pdf";
 
 const SECTION_LINKS = [
