@@ -41,6 +41,7 @@ const NAV_COLS = [
       { label: "NEAR AI Private Chat Terms of Service", href: "/terms-of-service" },
       { label: "Acceptable Use Policy", href: "/acceptable-use-policy" },
       { label: "Cookie Policy", href: "/cookie-policy" },
+      { label: "Data Processing Agreement", href: "/near-ai-data-processing-agreement-for-customers" },
     ],
   },
 ];
