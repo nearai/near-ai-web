@@ -84,7 +84,7 @@ export default function BrandPage() {
             <p className="[font-size:var(--font-size-body)] leading-relaxed text-[#101010] font-medium max-w-[52ch] mb-4 text-balance">
               Confidential, verifiable AI infrastructure for a user-owned AI economy, and the marks, color, and type that carry it.
             </p>
-            <p className="text-[0.875rem] leading-relaxed text-black/55 max-w-[66ch] mb-10 text-balance">
+            <p className="[font-size:var(--font-size-body)] leading-relaxed text-black/55 max-w-[66ch] mb-10 text-balance">
               Everything below is the working essential. The complete system (logo construction, layout ratios, the full palette) is one download away.
             </p>
             <div className="flex flex-wrap gap-3.5 items-center mb-10">
@@ -120,7 +120,7 @@ export default function BrandPage() {
           <div className="flex flex-wrap items-baseline gap-3.5 mb-4">
             <span className="font-mono text-[0.75rem] tracking-[0.3em] text-[#0072C9]">01 / PRIMARY</span>
             <h3 className="font-medium [font-size:var(--font-size-body)] tracking-[-0.01em]">Wordmark: &ldquo;NEAR AI&rdquo;</h3>
-            <span className="text-[0.875rem] text-black/40 w-full sm:w-auto sm:ml-auto">Default. Most horizontal placements. Min width 120px.</span>
+            <span className="[font-size:var(--font-size-body)] text-black/40 w-full sm:w-auto sm:ml-auto">Default. Most horizontal placements. Min width 120px.</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-11">
             {PRIMARY_LOGOS.map((logo) => (
@@ -141,7 +141,7 @@ export default function BrandPage() {
           <div className="flex flex-wrap items-baseline gap-3.5 mb-4">
             <span className="font-mono text-[0.75rem] tracking-[0.3em] text-[#0072C9]">02 / SECONDARY</span>
             <h3 className="font-medium [font-size:var(--font-size-body)] tracking-[-0.01em]">Lockup: &ldquo;N + AI&rdquo;</h3>
-            <span className="text-[0.875rem] text-black/40 w-full sm:w-auto sm:ml-auto">Tighter horizontal space. Min width 90px.</span>
+            <span className="[font-size:var(--font-size-body)] text-black/40 w-full sm:w-auto sm:ml-auto">Tighter horizontal space. Min width 90px.</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-11">
             {SECONDARY_LOGOS.map((logo) => (
@@ -162,7 +162,7 @@ export default function BrandPage() {
           <div className="flex flex-wrap items-baseline gap-3.5 mb-4">
             <span className="font-mono text-[0.75rem] tracking-[0.3em] text-[#0072C9]">03 / TERTIARY</span>
             <h3 className="font-medium [font-size:var(--font-size-body)] tracking-[-0.01em]">Tile: icon</h3>
-            <span className="text-[0.875rem] text-black/40 w-full sm:w-auto sm:ml-auto">Self-contained. Any background. Never add a plate. Min 32px.</span>
+            <span className="[font-size:var(--font-size-body)] text-black/40 w-full sm:w-auto sm:ml-auto">Self-contained. Any background. Never add a plate. Min 32px.</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             {TERTIARY_LOGOS.map((logo) => (
@@ -183,11 +183,11 @@ export default function BrandPage() {
           <div className="flex flex-wrap gap-9 p-5 lg:p-6 border border-[#CAC8C8] rounded-2xl bg-white">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[0.75rem] tracking-[0.3em] uppercase text-black/40">Clear space</span>
-              <span className="text-[1rem] font-medium">22% of logo height, all sides</span>
+              <span className="[font-size:var(--font-size-body)] font-medium">22% of logo height, all sides</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[0.75rem] tracking-[0.3em] uppercase text-black/40">Min width</span>
-              <span className="text-[1rem] font-medium">wordmark 120 · lockup 90 · tile 32px</span>
+              <span className="[font-size:var(--font-size-body)] font-medium">wordmark 120 · lockup 90 · tile 32px</span>
             </div>
             <div className="flex flex-col gap-1.5 ml-auto items-start">
               <span className="font-mono text-[0.75rem] tracking-[0.3em] uppercase text-black/40">All assets</span>
@@ -263,7 +263,7 @@ export default function BrandPage() {
               <div className="font-medium text-[6rem] sm:text-[9.375rem] leading-[0.9] tracking-[-0.03em]">Aa</div>
               <div>
                 <div className="font-medium text-[1.35rem] tracking-[-0.01em]">PP Neue Montreal</div>
-                <div className="text-[0.875rem] text-black/45 mt-1">Primary typeface · all text</div>
+                <div className="[font-size:var(--font-size-body)] text-black/45 mt-1">Primary typeface · all text</div>
               </div>
             </div>
             <div className="p-9 flex flex-col gap-6">
@@ -288,7 +288,7 @@ export default function BrandPage() {
               <div className="font-mono font-normal text-[6rem] sm:text-[9.375rem] leading-[0.9] tracking-[-0.03em]">Aa</div>
               <div>
                 <div className="font-medium text-[1.35rem] tracking-[-0.01em]">PP Neue Montreal Mono</div>
-                <div className="text-[0.875rem] text-black/45 mt-1">Light 300 · Regular 400 · technical text</div>
+                <div className="[font-size:var(--font-size-body)] text-black/45 mt-1">Light 300 · Regular 400 · technical text</div>
               </div>
             </div>
             <div className="p-9 flex flex-col gap-6">
@@ -302,7 +302,7 @@ export default function BrandPage() {
               </div>
               <div>
                 <div className="font-mono text-[0.75rem] tracking-[0.3em] uppercase text-black/40 mb-2">Regular · 400 · minor secondary text</div>
-                <div className="font-mono font-normal text-[1rem] leading-relaxed text-black/55 max-w-[62ch]">
+                <div className="font-mono font-normal [font-size:var(--font-size-body)] leading-relaxed text-black/55 max-w-[62ch]">
                   Used for blocks of minor secondary text: captions, metadata, and short technical notes set in regular weight for quiet, legible detail.
                 </div>
               </div>
@@ -335,7 +335,7 @@ export default function BrandPage() {
                 <h3 className="font-medium [font-size:var(--font-size-h3)] tracking-[-0.02em] text-white mb-3">
                   Download the complete logo kit.
                 </h3>
-                <p className="text-[1rem] text-white/70 max-w-[44ch]">
+                <p className="[font-size:var(--font-size-body)] text-white/70 max-w-[44ch]">
                   Every lockup, every color variant, in SVG and PNG — packaged as a single download.
                 </p>
               </div>
