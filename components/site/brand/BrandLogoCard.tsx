@@ -8,19 +8,20 @@ interface BrandLogoCardProps {
   imgClassName?: string;
   name: string;
   description: string;
+  nudgeDown?: boolean;
 }
 
-export default function BrandLogoCard({ svgSrc, pngSrc, alt, previewBg, imgClassName = "h-[26px]", name, description }: BrandLogoCardProps) {
+export default function BrandLogoCard({ svgSrc, pngSrc, alt, previewBg, imgClassName = "h-[26px]", name, description, nudgeDown = true }: BrandLogoCardProps) {
   return (
     <div className="rounded-2xl overflow-hidden border border-[#CAC8C8] bg-white flex flex-col">
-      <div className="flex-1 flex items-center justify-center px-5 py-8 min-h-[120px]" style={{ background: previewBg }}>
+      <div className="flex-1 flex items-center justify-center px-5 py-8 min-h-[144px]" style={{ background: previewBg }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={svgSrc} alt={alt} className={imgClassName} />
+        <img src={svgSrc} alt={alt} className={`${imgClassName} ${nudgeDown ? "translate-y-[5px]" : ""}`} />
       </div>
       <div className="flex items-stretch justify-between gap-2 px-3.5 py-2.5 border-t border-black/10">
         <span className="flex flex-col justify-center gap-px min-w-0 flex-1">
-          <b className="text-[0.875rem] font-medium truncate">{name}</b>
-          <span className="text-[0.875rem] text-black/45 truncate">{description}</span>
+          <b className="[font-size:var(--font-size-body)] font-medium truncate">{name}</b>
+          <span className="[font-size:var(--font-size-body)] text-black/45 truncate">{description}</span>
         </span>
         <span className="flex gap-1.5 shrink-0">
           <a

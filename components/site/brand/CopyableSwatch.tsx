@@ -29,10 +29,10 @@ export default function CopyableSwatch({ value, label, hexLabel, height = "110px
     >
       <div style={{ height, background: value }} className="border-b border-black/5" />
       <div className="px-4 py-3 flex items-baseline justify-between gap-2">
-        <span className="text-[1rem] font-medium">
+        <span className="[font-size:var(--font-size-body)] font-medium">
           {label} {sublabel && <span className="text-black/40 font-normal">· {sublabel}</span>}
         </span>
-        <span className="font-mono text-[0.875rem] text-black/55">{hexLabel}</span>
+        <span className="font-mono [font-size:var(--font-size-body)] text-black/55">{hexLabel}</span>
       </div>
     </button>
   );
