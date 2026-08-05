@@ -24,10 +24,10 @@ export default function BrandPillLink({ label, badge, variant = "light", icon: I
   return (
     <a
       {...rest}
-      className={`flex items-center gap-3 rounded-full pl-1.5 pr-6 py-1.5 whitespace-nowrap [font-size:var(--font-size-body)] transition-colors duration-200 ${styles} ${className}`}
+      className={`group flex items-center gap-3 rounded-full pl-1.5 pr-6 py-1.5 whitespace-nowrap [font-size:var(--font-size-body)] transition-colors duration-200 ${styles} ${className}`}
     >
       <div className={`w-9 h-9 rounded-full border flex items-center justify-center shrink-0 ${iconBorder}`}>
-        <Icon className="w-4 h-4" />
+        <Icon className={`w-4 h-4 ${Icon !== Plus ? "icon-wiggle" : ""}`} />
       </div>
       {label}
       {badge && <span className="font-mono text-[0.875rem] tracking-[0.06em] opacity-70">{badge}</span>}

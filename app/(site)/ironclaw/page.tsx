@@ -302,9 +302,9 @@ export default async function IronClawPage() {
 
             <div className="flex flex-col flex-1 justify-center py-14 lg:py-20 max-w-[760px]">
               <div className="hidden items-center gap-1.5 mb-7">
-                <span className="font-mono [font-size:0.6875rem] uppercase tracking-widest text-muted">Built by</span>
+                <span className="font-mono [font-size:0.75rem] uppercase tracking-widest text-muted">Built by</span>
                 <Image src="/ironclaw/near-logo-black.svg" alt="NEAR" width={22} height={20} className="opacity-70 w-auto h-5" />
-                <span className="font-mono [font-size:0.6875rem] uppercase tracking-widest text-muted">Near Foundation</span>
+                <span className="font-mono [font-size:0.75rem] uppercase tracking-widest text-muted">Near Foundation</span>
               </div>
               <h1 data-reveal-hero-h1 className="text-balance text-[#101010] leading-[1.1] font-medium tracking-tight mb-8" style={{ fontSize: "var(--font-size-h1)" }}>
                 Do what you do best, IronClaw will do the rest.
@@ -409,13 +409,13 @@ export default async function IronClawPage() {
           .ironclaw-code-scroll { animation: ironclaw-code-scroll 20s linear infinite; will-change: transform; }
         `}</style>
         <section className="relative bg-[#ECECEC] py-16 lg:py-24">
-          <div className="flex flex-col">
+          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20 flex flex-col">
 
             {/* CARD 1 — How it works */}
             <div
               id="how-it-works"
               className="relative lg:sticky lg:top-0 w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
-              style={{ zIndex: 11, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+              style={{ zIndex: 11 }}
             >
               <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
                 <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">How It Works</span>
@@ -445,7 +445,7 @@ export default async function IronClawPage() {
 
                     <div className="relative rounded-2xl overflow-hidden flex items-center justify-center min-h-[360px]">
                       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-[0.12]">
-                        <div className="ironclaw-code-scroll font-mono text-[11px] leading-[1.7] text-[#111] p-5">
+                        <div className="ironclaw-code-scroll font-mono text-[0.75rem] leading-[1.7] text-[#111] p-5">
                           {[...HOW_IT_WORKS_CODE, "", ...HOW_IT_WORKS_CODE].map((line, i) => (
                             <div key={i} className="whitespace-pre">{line}</div>
                           ))}
@@ -457,7 +457,7 @@ export default async function IronClawPage() {
                           <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
                           <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
                           <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-                          <span className="font-mono font-light text-[11px] ml-2 text-black/30">ironclaw — near-cloud</span>
+                          <span className="font-mono font-light text-[0.75rem] ml-2 text-black/30">ironclaw — near-cloud</span>
                         </div>
                         <div className="text-center py-8">
                           <p className="font-semibold text-sm mb-1 text-[#111]">IronClaw Instance</p>
@@ -477,7 +477,7 @@ export default async function IronClawPage() {
             <div
               id="features"
               className="relative lg:sticky lg:top-[60px] w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
-              style={{ zIndex: 12, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+              style={{ zIndex: 12 }}
             >
               <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
                 <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">What You Get</span>
@@ -499,7 +499,7 @@ export default async function IronClawPage() {
             <div
               id="why-switch"
               className="relative lg:sticky lg:top-[120px] w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
-              style={{ zIndex: 13, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+              style={{ zIndex: 13 }}
             >
               <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
                 <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">OpenClaw Problem</span>
@@ -509,7 +509,7 @@ export default async function IronClawPage() {
                   <h2 className="text-pretty text-[#111] font-medium leading-[1.05] tracking-tight [font-size:var(--font-size-h2)]">
                     Empower your agent with full system access and persistent memory while still protecting your secrets.
                   </h2>
-                  <p className="text-pretty text-black/55 leading-relaxed [font-size:1.25rem]">
+                  <p className="text-pretty text-black/55 leading-relaxed [font-size:var(--font-size-body)]">
                     OpenClaw unlocks the agentic future but it also risks exposing your secrets. Credentials can be exposed through prompt injections. Malicious skills exist to steal passwords. If you&apos;re running OpenClaw by itself with anything sensitive, there are significant risks.
                   </p>
                 </div>
@@ -549,7 +549,7 @@ export default async function IronClawPage() {
               {/* CARD 4 — Hosted solution */}
             <div
               className="relative lg:sticky lg:top-[180px] w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
-              style={{ zIndex: 14, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+              style={{ zIndex: 14 }}
             >
               <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
                 <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">The Hosted Solution</span>
@@ -592,7 +592,7 @@ export default async function IronClawPage() {
                           <div className="flex items-center gap-2 font-mono text-black/65 [font-size:11px] font-light">
                             <KeyRound className="w-3.5 h-3.5 text-[#4CA7E6]" />encrypted-vault
                           </div>
-                          <span className="rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[#4CA7E6]" style={{ backgroundColor: "rgba(76,167,230,0.1)", border: "1px solid rgba(76,167,230,0.2)" }}>Secure</span>
+                          <span className="rounded-full px-2 py-0.5 font-mono text-[0.75rem] uppercase tracking-widest text-[#4CA7E6]" style={{ backgroundColor: "rgba(76,167,230,0.1)", border: "1px solid rgba(76,167,230,0.2)" }}>Secure</span>
                         </div>
                         <p className="font-mono font-light text-xs mb-3 text-black/60">Credentials at rest · Encrypted</p>
                         <div className="flex flex-col gap-2">
@@ -635,7 +635,7 @@ export default async function IronClawPage() {
               Choose a NEAR AI deployment based on your performance requirements and preferred agent. You get NEAR security no matter what.
             </p>
 
-            <div className="overflow-x-auto w-full text-left">
+            <div className="overflow-x-auto w-full max-w-[75%] mx-auto text-left">
               <table className="w-full min-w-[560px] table-fixed border-collapse">
                 <thead>
                   <tr className="border-b border-[#CAC8C8]">
@@ -685,7 +685,7 @@ export default async function IronClawPage() {
                   <div className="flex items-center gap-2 mb-6">
                     <span className="font-mono [font-size:0.75rem] uppercase tracking-widest text-muted">{tier.name}</span>
                     {tier.badge && (
-                      <span className="rounded-full bg-[#0072C9] text-white px-2.5 py-0.5 font-mono [font-size:0.625rem] uppercase tracking-widest">{tier.badge}</span>
+                      <span className="rounded-full bg-[#0072C9] text-white px-2.5 py-0.5 font-mono [font-size:0.75rem] uppercase tracking-widest">{tier.badge}</span>
                     )}
                   </div>
                   <div className="flex items-baseline gap-2 mb-6">
@@ -698,7 +698,7 @@ export default async function IronClawPage() {
                   </p>
                   <ul className="flex flex-col gap-3 mb-10">
                     {tier.bullets.map((bullet) => (
-                      <li key={bullet} className="flex items-start gap-2 font-mono text-[#101010] [font-size:var(--font-size-body)]">
+                      <li key={bullet} className="flex items-start gap-2 text-[#101010] [font-size:var(--font-size-body)]">
                         <CheckCircle2 className="w-4 h-4 text-[#0072C9] shrink-0 mt-1" />
                         {bullet}
                       </li>
@@ -715,6 +715,14 @@ export default async function IronClawPage() {
         <section className="relative bg-[linear-gradient(to_bottom,#ECECEC_33%,#575757_100%)] py-16 lg:py-24">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
             <div className="relative w-full rounded-[2rem] overflow-hidden min-h-[420px] lg:min-h-[480px] flex flex-col bg-[#ECECEC]">
+              <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/demo-v1/LOGO_near 3.png" alt="" className="w-[600px] sm:w-[900px] lg:w-[1200px] opacity-20 translate-y-32" />
+              </div>
+              <div className="absolute inset-0 z-[1] pointer-events-none">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img data-parallax-card src="/demo-v1/background-1.webp" alt="" className="w-full h-full object-cover object-center opacity-75 translate-y-[66%]" />
+              </div>
               <div className="relative z-10 flex flex-col flex-1 items-center justify-center text-center px-6 py-12 md:py-16 lg:py-20 gap-8">
                 <div className="flex flex-col items-center gap-4 max-w-[1280px]">
                   <h2 data-reveal className="text-balance font-medium leading-[1.1] tracking-tight text-[#101010] [font-size:var(--font-size-h2)]" style={{ textWrap: "balance" }}>

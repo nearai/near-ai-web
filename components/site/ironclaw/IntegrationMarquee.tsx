@@ -64,8 +64,8 @@ function Row({ items, reverse = false, forcePaused, onSelect }: RowProps) {
             >
               <Icon className="w-[22px] h-[22px] text-[#0072C9] shrink-0" />
               <span className="flex flex-col items-start">
-                <span className="font-medium text-[15px] leading-tight whitespace-nowrap text-[#101010]">{item.name}</span>
-                <span className="font-mono text-[9px] uppercase tracking-wider text-muted whitespace-nowrap">
+                <span className="font-medium text-[14px] leading-tight whitespace-nowrap text-[#101010]">{item.name}</span>
+                <span className="font-mono text-[0.75rem] uppercase tracking-wider text-muted whitespace-nowrap">
                   {item.recipes.length} recipes
                 </span>
               </span>

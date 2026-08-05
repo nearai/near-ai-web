@@ -284,7 +284,7 @@ export default function HomePage() {
         {/* CLOSING CTA */}
         <section className="relative bg-[linear-gradient(to_bottom,#ECECEC_33%,#575757_100%)]">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <div className="relative w-full rounded-[2rem] overflow-hidden min-h-[420px] lg:min-h-[480px] flex flex-col bg-gradient-to-b from-[#F3F3F3] via-[#E2E1E1] to-[#FCFCFC]">
+            <div className="relative w-full rounded-[2rem] overflow-hidden min-h-[420px] lg:min-h-[480px] flex flex-col bg-[#ECECEC]">
               <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/demo-v1/LOGO_near 3.png" alt="" className="w-[600px] sm:w-[900px] lg:w-[1200px] opacity-20 translate-y-32" />

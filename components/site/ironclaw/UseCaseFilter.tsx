@@ -46,7 +46,7 @@ function UseCaseCard({ item, className = "" }: { item: UseCase; className?: stri
         {item.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full border border-[#CAC8C8] px-2.5 py-0.5 font-mono text-[0.7rem] leading-none text-muted"
+            className="rounded-full border border-[#CAC8C8] px-2.5 py-0.5 text-[0.75rem] leading-none text-muted"
           >
             {tag}
           </span>
@@ -96,7 +96,7 @@ export default function UseCaseFilter({ items }: Props) {
             key={category}
             type="button"
             onClick={() => setActive(category)}
-            className={`rounded-full px-4 py-1.5 font-mono text-[0.75rem] uppercase tracking-widest transition-colors duration-200 cursor-pointer ${
+            className={`rounded-full px-4 py-1.5 text-[0.75rem] uppercase tracking-widest transition-colors duration-200 cursor-pointer ${
               active === category
                 ? "bg-[#101010] text-[#ECECEC]"
                 : "border border-[#101010]/25 text-[#101010] hover:bg-[#101010]/05"

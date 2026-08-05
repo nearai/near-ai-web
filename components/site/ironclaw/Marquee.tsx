@@ -14,7 +14,7 @@ export default function Marquee({ items, reverse = false }: Props) {
         {[...items, ...items].map((item, i) => (
           <div
             key={`${item}-${i}`}
-            className="shrink-0 rounded-full border border-[#CAC8C8] bg-[#ECECEC] px-6 py-3 font-mono text-[0.75rem] uppercase tracking-widest text-muted whitespace-nowrap"
+            className="shrink-0 rounded-full border border-[#CAC8C8] bg-[#ECECEC] px-6 py-3 text-[0.75rem] uppercase tracking-widest text-muted whitespace-nowrap"
           >
             {item}
           </div>
