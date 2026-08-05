@@ -60,7 +60,7 @@ function Row({ items, reverse = false, forcePaused, onSelect }: RowProps) {
               key={`${item.name}-${i}`}
               type="button"
               onClick={() => onSelect(item)}
-              className="shrink-0 flex items-center gap-3 rounded-xl border border-[#CAC8C8] bg-white px-5 py-3.5 cursor-pointer transition-colors hover:border-[#101010]/40"
+              className="shrink-0 flex items-center gap-3 rounded-xl border border-[#CAC8C8] bg-[#ECECEC] px-5 py-3.5 cursor-pointer transition-colors hover:border-[#101010]/40"
             >
               <Icon className="w-[22px] h-[22px] text-[#0072C9] shrink-0" />
               <span className="flex flex-col items-start">

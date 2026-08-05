@@ -35,11 +35,11 @@ function UseCaseCard({ item, className = "" }: { item: UseCase; className?: stri
     >
       <div className="flex items-center gap-2.5">
         <Icon className="w-[22px] h-[22px] text-[#0072C9] shrink-0" />
-        <h4 className="font-medium leading-[1.15] text-[#101010] [font-size:var(--font-size-h3)]">
+        <h4 className="font-medium leading-[1.15] text-[#101010] [font-size:var(--font-size-body)]">
           {item.title}
         </h4>
       </div>
-      <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)]">
+      <p className="text-pretty font-mono text-muted leading-relaxed [font-size:0.875rem]">
         {item.description}
       </p>
       <div className="flex flex-wrap gap-1.5 mt-auto pt-2">

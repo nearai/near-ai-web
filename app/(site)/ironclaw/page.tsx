@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import {
   Rocket, ShieldCheck, Cog, CloudUpload,
-  Lock, CheckCircle2, XCircle, Zap, KeyRound,
+  Lock, CheckCircle2, XCircle, Zap, KeyRound, Github, Star, BookOpen,
   type LucideIcon,
 } from "lucide-react";
 import PillButton from "@/components/site/PillButton";
@@ -13,8 +13,8 @@ import GridLines from "@/components/site/v2/GridLines";
 import UseCaseFilter from "@/components/site/ironclaw/UseCaseFilter";
 import Marquee from "@/components/site/ironclaw/Marquee";
 import IntegrationMarquee, { type Integration } from "@/components/site/ironclaw/IntegrationMarquee";
-import MacWindow from "@/components/site/ironclaw/MacWindow";
 import SecurityFeaturesGrid from "@/components/site/ironclaw/SecurityFeaturesGrid";
+import OpenClawChat from "@/components/site/ironclaw/OpenClawChat";
 
 export const metadata: Metadata = {
   title: "IronClaw | NEAR AI",
@@ -154,9 +154,34 @@ const HOW_IT_WORKS_CODE = [
   "  vault.bind_endpoints(&cfg.allowlist)?;",
   "  agent::spawn(tee, vault)",
   "}",
+  " ",
+  "#[derive(Encrypt, ZeroOnDrop)]",
+  "struct Credentials {",
+  "  api_key: Secret<String>,",
+  "  bearer: Secret<String>,",
+  "}",
+  " ",
+  "impl Vault {",
+  "  fn inject(&self, req: &mut Request) {",
+  "    if self.allowlist.permits(req.url()) {",
+  "      req.set_auth(&self.credentials)",
+  "    }",
+  "  }",
+  "}",
+  " ",
+  "fn verify_wasm(bytes: &[u8]) -> bool {",
+  "  wasmparser::validate(bytes).is_ok()",
+  "    && !contains_unsafe(bytes)",
+  "}",
+  " ",
+  "struct AllowList { endpoints: Vec<Url> }",
+  " ",
+  "impl AllowList {",
+  "  fn permits(&self, url: &Url) -> bool {",
+  "    self.endpoints.iter().any(|e| e == url)",
+  "  }",
+  "}",
 ];
-
-const DEPLOY_STEPS = ["Authenticating", "Provisioning TEE enclave", "Uploading Wasm payload", "Verifying memory safety"];
 
 const SECURITY_FEATURES: { title: string; text: string; icon: "Lock" | "Database" | "ShieldCheck" | "Eye" | "Code2" | "Network" }[] = [
   { title: "Encrypted Vault", text: "Your credentials are invisible to the AI. API keys, tokens, and passwords are encrypted at rest and injected into requests at the host boundary — only for endpoints you've approved.", icon: "Lock" },
@@ -219,9 +244,23 @@ const PRICING_TIERS = [
   },
 ];
 
-const CARD_STICKY_TOPS = [60, 70, 80, 90] as const;
+async function getRepoStars() {
+  try {
+    const res = await fetch("https://api.github.com/repos/nearai/ironclaw", {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return typeof data.stargazers_count === "number" ? data.stargazers_count : null;
+  } catch {
+    return null;
+  }
+}
 
-export default function IronClawPage() {
+export default async function IronClawPage() {
+  const stars = await getRepoStars();
+  const formattedStars = stars !== null ? new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(stars) : null;
+
   return (
     <div className="relative w-full font-sans bg-[#e4e4e4] text-[#101010] [--font-size-h3:1.5rem]">
       <AnimationsProvider />
@@ -262,7 +301,7 @@ export default function IronClawPage() {
             <SiteHeader />
 
             <div className="flex flex-col flex-1 justify-center py-14 lg:py-20 max-w-[760px]">
-              <div className="flex items-center gap-1.5 mb-7">
+              <div className="hidden items-center gap-1.5 mb-7">
                 <span className="font-mono [font-size:0.6875rem] uppercase tracking-widest text-muted">Built by</span>
                 <Image src="/ironclaw/near-logo-black.svg" alt="NEAR" width={22} height={20} className="opacity-70 w-auto h-5" />
                 <span className="font-mono [font-size:0.6875rem] uppercase tracking-widest text-muted">Near Foundation</span>
@@ -270,14 +309,28 @@ export default function IronClawPage() {
               <h1 data-reveal-hero-h1 className="text-balance text-[#101010] leading-[1.1] font-medium tracking-tight mb-8" style={{ fontSize: "var(--font-size-h1)" }}>
                 Do what you do best, IronClaw will do the rest.
               </h1>
-              <p className="text-pretty text-black/60 [font-size:var(--font-size-body)] font-mono leading-relaxed mb-10 max-w-[480px]">
+              <p className="text-pretty text-black/60 [font-size:var(--font-size-body)] leading-relaxed mb-10 max-w-[480px]">
                 An open-source agent for your busywork — in encrypted enclaves, where your secrets never touch the model.
               </p>
               <div className="flex flex-wrap gap-3 mb-12">
                 <BrandPillLink href="#use-cases" label="Discover use cases" variant="solid" />
-                <PillButton href="https://github.com/nearai/ironclaw" target="_blank" rel="noopener noreferrer" label="View source" />
+                <PillButton
+                  href="https://github.com/nearai/ironclaw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  label="View source"
+                  icon={Github}
+                  suffix={
+                    formattedStars && (
+                      <span className="flex items-center gap-1 font-mono [font-size:0.8125rem] text-muted">
+                        <Star className="w-3.5 h-3.5 fill-current" />
+                        {formattedStars}
+                      </span>
+                    )
+                  }
+                />
               </div>
-              <div className="flex flex-wrap gap-6">
+              <div className="hidden flex-wrap gap-6">
                 {HERO_SECTION_LINKS.map((link) => (
                   <a key={link.href} href={link.href} className="font-mono text-[0.875rem] tracking-[0.3em] uppercase text-black/45 hover:text-black transition-colors">
                     {link.label}
@@ -296,25 +349,15 @@ export default function IronClawPage() {
             <h2 className="text-pretty text-[#101010] font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mt-2 mb-4">
               More you can hand off.
             </h2>
-            <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px] mb-10">
+            <p className="text-pretty text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px] mb-10">
               You don&apos;t need to pick anything to get started — just open your agent above. But if you&apos;re curious, here&apos;s a taste of what IronClaw takes off your plate. Tap any to start it in your agent; it sets itself up in chat, then runs on its own.
             </p>
 
             <UseCaseFilter items={USE_CASES} />
 
-            <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)] mt-10">
+            <p className="text-pretty text-muted leading-relaxed [font-size:var(--font-size-body)] mt-10">
               Missing yours? IronClaw builds new tools and connectors on the fly — just ask it in chat.
             </p>
-          </div>
-        </section>
-
-        {/* MODEL-AGNOSTIC */}
-        <section className="relative bg-[#ECECEC] py-[25.6px] lg:py-[38.4px]">
-          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <div className="rounded-[2rem] bg-[#272727] p-8 lg:p-10">
-              <span className="block font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-white/50 mb-4">Model-agnostic · compatible with</span>
-              <Marquee items={MODELS} />
-            </div>
           </div>
         </section>
 
@@ -325,7 +368,7 @@ export default function IronClawPage() {
             <h2 className="text-pretty text-[#101010] font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mt-2 mb-4">
               Works with your stack.
             </h2>
-            <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px]">
+            <p className="text-pretty text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px]">
               Email, calendars, chat, code, tickets — your agent plugs into the tools you already use. Click any of them for automations you can hand off right now. Missing one? It builds the connector itself.
             </p>
           </div>
@@ -333,14 +376,14 @@ export default function IronClawPage() {
           <IntegrationMarquee rowA={INTEGRATIONS_ROW_1} rowB={INTEGRATIONS_ROW_2} />
 
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20 mt-12">
-            <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)]">
+            <p className="text-pretty text-muted leading-relaxed [font-size:var(--font-size-body)]">
               ...and anything with an API: IronClaw builds and sandboxes new tools on the fly — just describe what you need.
             </p>
           </div>
         </section>
 
         {/* STATS STRIP */}
-        <section className="relative bg-[#ECECEC] py-[25.6px] lg:py-[38.4px]">
+        <section className="hidden relative bg-[#ECECEC] py-16 lg:py-24">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
             <div className="rounded-[2rem] bg-[#272727] p-8 lg:p-10">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-center">
@@ -359,64 +402,70 @@ export default function IronClawPage() {
 
         {/* HOW IT WORKS */}
         {/* STACKING CARDS — How it works / Features / Why switch / Hosted solution */}
+        {/* Replicates ironclaw.com's mechanism: each card is independently `sticky` at an
+            increasing `top` offset with a rising z-index, so it visually slides under the
+            next one on scroll — no GSAP scale/rotate needed, pure CSS. */}
+        <style>{`
+          .ironclaw-code-scroll { animation: ironclaw-code-scroll 20s linear infinite; will-change: transform; }
+        `}</style>
         <section className="relative bg-[#ECECEC] py-16 lg:py-24">
-          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <div data-pin-stack className="flex flex-col">
+          <div className="flex flex-col">
 
-              {/* CARD 1 — How it works */}
-              <div className="w-full [perspective:900px] mb-10 lg:mb-16 lg:sticky lg:z-10" style={{ top: `${CARD_STICKY_TOPS[0]}px` }}>
-                <div
-                  id="how-it-works"
-                  data-pin-card
-                  className="w-full rounded-[2rem] overflow-hidden bg-[linear-gradient(180deg,#000000_0%,#0A2639_100%)] shadow-[0_30px_80px_-25px_rgba(0,0,0,0.6)] p-8 sm:p-10 lg:p-14"
-                >
-                  <span className="font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-[#4CA7E6]">How It Works</span>
-                  <h2 className="font-sans font-medium leading-[1.1] tracking-tight text-white mt-2 mb-10 [font-size:var(--font-size-h2)]">
-                    From zero to secure agent in minutes.
-                  </h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16 items-center">
+            {/* CARD 1 — How it works */}
+            <div
+              id="how-it-works"
+              className="relative lg:sticky lg:top-0 w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
+              style={{ zIndex: 11, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+            >
+              <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
+                <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">How It Works</span>
+              </div>
+              <div className="max-w-[1920px] mx-auto px-5 sm:px-10 lg:px-20 py-8 md:py-16 flex flex-col gap-8 lg:gap-12">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-24 items-start">
+                    <h2 className="font-medium leading-[1.05] tracking-tight text-[#111] text-balance [font-size:var(--font-size-h2)]">
+                      From zero to secure agent in minutes.
+                    </h2>
+                    <p className="text-pretty text-black/55 leading-relaxed [font-size:var(--font-size-body)]">
+                      IronClaw offers simple setup and built-in security for OpenClaw&apos;s personal AI assistant—powered by NEAR AI Cloud or run locally.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24 items-center">
 
-                    <div>
-                      <div className="mb-10">
-                        {HOW_IT_WORKS.map(({ label, text, icon: Icon }, i, arr) => (
-                          <div key={label} className={`relative ${i !== 0 ? "pt-6" : ""} pb-6 flex gap-4`}>
-                            {i !== 0 && <div className="absolute top-0 left-0 right-0 h-px bg-white/10 z-[5]" />}
-                            {i === arr.length - 1 && <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10 z-[5]" />}
-                            <Icon className="w-5 h-5 text-[#4CA7E6] shrink-0 mt-1" />
-                            <div className="flex flex-col gap-2">
-                              <span className="text-white font-medium tracking-[0.02em] [font-size:var(--font-size-h3)]">{label}</span>
-                              <p className="text-pretty text-white/55 leading-[1.6]" style={{ fontSize: "var(--font-size-body)" }}>{text}</p>
-                            </div>
+                    <div className="flex flex-col gap-8">
+                      {HOW_IT_WORKS.map(({ label, text, icon: Icon }) => (
+                        <div key={label} className="flex gap-4">
+                          <Icon className="w-5 h-5 text-[#4CA7E6] shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-[#111] [font-size:1.125rem]">{label}</h4>
+                            <p className="mt-1 text-pretty text-black/55 leading-relaxed [font-size:var(--font-size-body)]">{text}</p>
                           </div>
-                        ))}
-                      </div>
-                      <PillButton href="https://docs.ironclaw.com" target="_blank" rel="noopener noreferrer" label="Read the docs" className="w-fit text-white border-white/25 hover:bg-white/10" />
+                        </div>
+                      ))}
                     </div>
 
-                    <div className="relative">
-                      <MacWindow title="ironclaw — near-cloud">
-                        <div className="font-mono text-[0.8125rem] leading-relaxed text-white/70 h-[280px] overflow-hidden">
-                          {HOW_IT_WORKS_CODE.map((line, i) => (
+                    <div className="relative rounded-2xl overflow-hidden flex items-center justify-center min-h-[360px]">
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-[0.12]">
+                        <div className="ironclaw-code-scroll font-mono text-[11px] leading-[1.7] text-[#111] p-5">
+                          {[...HOW_IT_WORKS_CODE, "", ...HOW_IT_WORKS_CODE].map((line, i) => (
                             <div key={i} className="whitespace-pre">{line}</div>
                           ))}
                         </div>
-                      </MacWindow>
+                      </div>
 
-                      <div className="absolute -bottom-8 -right-4 sm:right-4 w-[240px] sm:w-[260px] rounded-xl border border-[#CAC8C8] bg-white p-4 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.25)]">
-                        <div className="flex items-center justify-between mb-2.5">
-                          <span className="font-medium text-[#101010] [font-size:0.8125rem]">Deploying</span>
-                          <span className="font-mono text-[#0072C9] [font-size:0.75rem]">100%</span>
+                      <div className="relative z-10 w-full max-w-[320px] mx-auto p-5 rounded-2xl border border-black/[0.07]" style={{ backgroundColor: "rgba(235,235,235,0.55)", backdropFilter: "blur(14px)" }}>
+                        <div className="flex items-center gap-1.5 mb-4 pb-3 border-b border-black/[0.07]">
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
+                          <span className="font-mono font-light text-[11px] ml-2 text-black/30">ironclaw — near-cloud</span>
                         </div>
-                        <div className="h-1 rounded-full bg-[#CAC8C8] mb-3 overflow-hidden">
-                          <div className="h-full w-full bg-[#0072C9]" />
+                        <div className="text-center py-8">
+                          <p className="font-semibold text-sm mb-1 text-[#111]">IronClaw Instance</p>
+                          <p className="font-mono font-light text-xs mb-6 text-black/60">NEAR AI Cloud · TEE Ready</p>
+                          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white" style={{ background: "radial-gradient(ellipse at 50% 130%, #4CA7E6, #2882c8)" }}>
+                            <Rocket className="w-3.5 h-3.5" /> Deploy Now
+                          </div>
                         </div>
-                        <ul className="flex flex-col gap-1.5">
-                          {DEPLOY_STEPS.map((step) => (
-                            <li key={step} className="flex items-center gap-1.5 font-mono text-muted [font-size:0.6875rem]">
-                              <span className="text-[#0072C9]">✓</span>{step}...
-                            </li>
-                          ))}
-                        </ul>
                       </div>
                     </div>
 
@@ -425,155 +474,186 @@ export default function IronClawPage() {
               </div>
 
               {/* CARD 2 — Security features */}
-              <div className="w-full [perspective:900px] mb-10 lg:mb-16 lg:sticky lg:z-20" style={{ top: `${CARD_STICKY_TOPS[1]}px` }}>
-                <div
-                  id="features"
-                  data-pin-card
-                  className="w-full rounded-[2rem] overflow-hidden bg-[linear-gradient(180deg,#000000_0%,#0A2639_100%)] shadow-[0_30px_80px_-25px_rgba(0,0,0,0.6)] p-8 sm:p-10 lg:p-14"
-                >
-                  <span className="font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-[#4CA7E6]">What You Get</span>
-                  <h2 className="text-pretty text-white font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mt-2 mb-10">
+            <div
+              id="features"
+              className="relative lg:sticky lg:top-[60px] w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
+              style={{ zIndex: 12, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+            >
+              <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
+                <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">What You Get</span>
+              </div>
+              <div className="max-w-[1920px] mx-auto px-5 sm:px-10 lg:px-20 py-8 md:py-16 flex flex-col gap-8 lg:gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-24 items-start">
+                  <h2 className="text-pretty text-[#111] font-medium leading-[1.05] tracking-tight [font-size:var(--font-size-h2)]">
                     Security you don&apos;t have to think about.
                   </h2>
-                  <SecurityFeaturesGrid items={SECURITY_FEATURES} />
+                  <p className="text-pretty text-black/55 [font-size:var(--font-size-body)]">
+                    IronClaw is powered by NEAR AI&apos;s cryptographically secure infrastructure, which ensures your credentials never leave the vault.
+                  </p>
                 </div>
+                <SecurityFeaturesGrid items={SECURITY_FEATURES} />
               </div>
+            </div>
 
               {/* CARD 3 — OpenClaw problem */}
-              <div className="w-full [perspective:900px] mb-10 lg:mb-16 lg:sticky lg:z-30" style={{ top: `${CARD_STICKY_TOPS[2]}px` }}>
-                <div
-                  id="why-switch"
-                  data-pin-card
-                  className="w-full rounded-[2rem] overflow-hidden bg-[linear-gradient(180deg,#000000_0%,#0A2639_100%)] shadow-[0_30px_80px_-25px_rgba(0,0,0,0.6)] p-8 sm:p-10 lg:p-14"
-                >
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-12">
-                    <div>
-                      <span className="font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-[#4CA7E6]">OpenClaw Problem</span>
-                      <h2 className="text-pretty text-white font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mt-2 mb-4">
-                        Empower your agent with full system access and persistent memory while still protecting your secrets.
-                      </h2>
-                      <p className="text-pretty font-mono text-white/55 leading-relaxed [font-size:var(--font-size-body)]">
-                        OpenClaw unlocks the agentic future but it also risks exposing your secrets. Credentials can be exposed through prompt injections. Malicious skills exist to steal passwords. If you&apos;re running OpenClaw by itself with anything sensitive, there are significant risks.
-                      </p>
-                    </div>
+            <div
+              id="why-switch"
+              className="relative lg:sticky lg:top-[120px] w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
+              style={{ zIndex: 13, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+            >
+              <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
+                <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">OpenClaw Problem</span>
+              </div>
+              <div className="max-w-[1920px] mx-auto px-5 sm:px-10 lg:px-20 py-8 md:py-16 flex flex-col gap-8 lg:gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-24 items-start">
+                  <h2 className="text-pretty text-[#111] font-medium leading-[1.05] tracking-tight [font-size:var(--font-size-h2)]">
+                    Empower your agent with full system access and persistent memory while still protecting your secrets.
+                  </h2>
+                  <p className="text-pretty text-black/55 leading-relaxed [font-size:1.25rem]">
+                    OpenClaw unlocks the agentic future but it also risks exposing your secrets. Credentials can be exposed through prompt injections. Malicious skills exist to steal passwords. If you&apos;re running OpenClaw by itself with anything sensitive, there are significant risks.
+                  </p>
+                </div>
 
-                    <MacWindow title="openclaw — agent">
-                      <div className="flex flex-col gap-3">
-                        {CHAT_MESSAGES.map((msg, i) => (
-                          <div
-                            key={i}
-                            className={`font-mono [font-size:0.8125rem] leading-relaxed px-3 py-2 rounded-lg max-w-[85%] ${
-                              msg.danger
-                                ? "bg-[#ff5f57]/15 text-[#ff8f88] self-start"
-                                : msg.role === "user"
-                                ? "bg-white/10 text-white/80 self-start"
-                                : "bg-white/[0.04] text-white/60 self-start"
-                            }`}
-                          >
-                            <span className="text-white/30 mr-1.5">{msg.role}</span>{msg.text}
-                          </div>
-                        ))}
-                      </div>
-                    </MacWindow>
-                  </div>
-
-                  <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24 items-center">
+                  <ul className="flex flex-col gap-6">
                     {RISKS.map(({ title, text }, i) => (
-                      <div key={title} data-reveal-item className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-6 flex flex-col gap-3">
-                        <div className="flex items-center gap-2.5">
-                          <span className="font-mono text-white/40 [font-size:1.875rem] leading-none">{i + 1}</span>
-                          <p className="font-medium text-white [font-size:var(--font-size-body)]">{title}</p>
+                      <li key={title} className="flex gap-3.5">
+                        <span className="shrink-0 w-6 h-6 rounded-full bg-[#DC3C3C] text-white flex items-center justify-center text-xs font-bold">{i + 1}</span>
+                        <div>
+                          <p className="font-semibold text-[#101010] mb-1 [font-size:var(--font-size-body)]">{title}</p>
+                          <p className="text-pretty text-black/55 leading-relaxed [font-size:var(--font-size-body)]">{text}</p>
                         </div>
-                        <p className="text-pretty font-mono text-white/55 leading-relaxed [font-size:var(--font-size-body)]">{text}</p>
-                      </div>
+                      </li>
                     ))}
+                  </ul>
+
+                  <div className="relative rounded-2xl overflow-hidden flex items-center justify-center min-h-[360px]">
+                    <div className="relative z-10 w-full max-w-[420px] mx-auto rounded-xl border border-black/10 overflow-hidden" style={{ backgroundColor: "rgba(244,244,244,0.7)", backdropFilter: "blur(14px)", boxShadow: "0 24px 60px -24px rgba(0,0,0,0.25)" }}>
+                      <div className="relative flex items-center px-4 py-3 bg-black/[0.04] border-b border-black/[0.08]">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-[#FF5F57] border-[0.5px] border-black/[0.08]" />
+                          <span className="w-3 h-3 rounded-full bg-[#FFBD2E] border-[0.5px] border-black/[0.08]" />
+                          <span className="w-3 h-3 rounded-full bg-[#28C840] border-[0.5px] border-black/[0.08]" />
+                        </div>
+                        <span className="font-mono text-[12px] absolute left-1/2 -translate-x-1/2 text-black/50">openclaw — agent</span>
+                      </div>
+                      <div className="p-6">
+                        <OpenClawChat messages={CHAT_MESSAGES} />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* CARD 4 — Hosted solution (last: no scale/rotation applied) */}
-              <div className="w-full [perspective:900px] lg:sticky lg:z-40" style={{ top: `${CARD_STICKY_TOPS[3]}px` }}>
-                <div
-                  data-pin-card
-                  className="w-full rounded-[2rem] overflow-hidden bg-[linear-gradient(180deg,#000000_0%,#0A2639_100%)] shadow-[0_30px_80px_-25px_rgba(0,0,0,0.6)] p-8 sm:p-10 lg:p-14"
-                >
-                  <span className="font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-[#4CA7E6]">How IronClaw Fixes This</span>
-                  <h2 className="text-pretty text-white font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mt-2 mb-6">
-                    The Hosted Solution.
-                  </h2>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-center mb-16">
+              {/* CARD 4 — Hosted solution */}
+            <div
+              className="relative lg:sticky lg:top-[180px] w-full overflow-hidden lg:min-h-[880px] rounded-t-[3rem] rounded-b-[2.5rem] bg-[#ECECEC] border border-[#CAC8C8]"
+              style={{ zIndex: 14, boxShadow: "0 -4px 24px rgba(0,0,0,0.06)" }}
+            >
+              <div className="px-5 sm:px-10 lg:px-20 py-5 flex items-center border-b border-[#CAC8C8] cursor-pointer transition-colors hover:bg-black/[0.02]">
+                <span className="font-mono text-[14px] font-light uppercase tracking-[0.15em] text-[#555]">The Hosted Solution</span>
+              </div>
+              <div className="max-w-[1920px] mx-auto px-5 sm:px-10 lg:px-20 py-8 md:py-16 flex flex-col gap-8 lg:gap-12">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-24 items-start">
                     <div>
-                      <p className="text-pretty font-mono text-white/55 leading-relaxed [font-size:var(--font-size-body)] max-w-[640px] mb-3">
+                      <span className="font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-[#4CA7E6] mb-4 block">How IronClaw Fixes This</span>
+                      <h2 className="text-pretty text-[#111] font-medium leading-[1.05] tracking-tight [font-size:var(--font-size-h2)]">
+                        The Hosted Solution.
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24 items-center">
+                    <div>
+                      <p className="text-pretty text-black/55 leading-relaxed [font-size:var(--font-size-body)] mb-3">
                         Running IronClaw on NEAR AI Cloud, your credentials live in an encrypted vault empowering your agent with full system access and persistent memory while still protecting your secrets.
                       </p>
-                      <p className="text-pretty font-mono text-white/55 leading-relaxed [font-size:var(--font-size-body)] max-w-[640px] mb-8">
+                      <p className="text-pretty text-black/55 leading-relaxed [font-size:var(--font-size-body)] mb-8">
                         Every tool runs in its own WebAssembly sandbox with no filesystem access and no outbound connections beyond your allowlist. The entire runtime is Rust — no garbage collector, no buffer overflows, no use-after-free.
                       </p>
 
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {HOSTED_CHIPS.map((chip) => (
-                          <span key={chip} className="rounded-full border border-white/20 px-4 py-1.5 font-mono [font-size:0.75rem] uppercase tracking-widest text-white/70">
+                          <span key={chip} className="rounded-full px-3 py-1 font-mono [font-size:0.75rem] font-normal text-[#4CA7E6]" style={{ backgroundColor: "rgba(76,167,230,0.1)", border: "1px solid rgba(76,167,230,0.25)" }}>
                             {chip}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    <MacWindow title="encrypted-vault">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2 font-mono text-white/50 [font-size:0.75rem]">
-                          <KeyRound className="w-3.5 h-3.5 text-[#4CA7E6]" />encrypted-vault
-                        </div>
-                        <span className="rounded-full bg-[#0072C9]/20 text-[#4CA7E6] px-2.5 py-0.5 font-mono text-[0.625rem] uppercase tracking-widest">Secure</span>
-                      </div>
-                      <div className="flex flex-col gap-2.5">
-                        {VAULT_ROWS.map((row) => (
-                          <div key={row} className="flex items-center justify-between font-mono [font-size:0.8125rem]">
-                            <span className="text-white/60">{row}</span>
-                            <span className="tracking-widest text-white/30">•••••••••</span>
+                    <div className="relative rounded-2xl overflow-hidden flex items-center justify-center min-h-[360px]">
+                      <div
+                        className="absolute inset-0 pointer-events-none select-none"
+                        style={{ backgroundImage: "radial-gradient(circle, rgba(76,167,230,0.15) 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+                      />
+                      <div className="relative z-10 w-full max-w-[380px] mx-auto p-5 rounded-2xl border border-black/[0.07]" style={{ backgroundColor: "rgba(235,235,235,0.6)", backdropFilter: "blur(14px)" }}>
+                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/[0.07]">
+                          <div className="flex items-center gap-2 font-mono text-black/65 [font-size:11px] font-light">
+                            <KeyRound className="w-3.5 h-3.5 text-[#4CA7E6]" />encrypted-vault
                           </div>
-                        ))}
+                          <span className="rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-[#4CA7E6]" style={{ backgroundColor: "rgba(76,167,230,0.1)", border: "1px solid rgba(76,167,230,0.2)" }}>Secure</span>
+                        </div>
+                        <p className="font-mono font-light text-xs mb-3 text-black/60">Credentials at rest · Encrypted</p>
+                        <div className="flex flex-col gap-2">
+                          {VAULT_ROWS.map((row) => (
+                            <div key={row} className="flex items-center justify-between px-3 py-2 rounded-lg bg-black/[0.04] border border-black/[0.06]">
+                              <span className="font-mono font-light text-xs text-black/40">{row}</span>
+                              <span className="font-mono text-xs tracking-widest text-black/20">•••••••••</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <p className="mt-4 font-mono text-[#4CA7E6]/70 [font-size:0.75rem]">→ Injecting at network boundary...</p>
-                    </MacWindow>
+                    </div>
                   </div>
                 </div>
               </div>
 
+            <div className="hidden lg:block h-[20vh]" />
+          </div>
+        </section>
+
+        {/* MODEL-AGNOSTIC */}
+        <section className="relative bg-[#ECECEC] py-16 lg:py-24">
+          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
+            <div className="rounded-[2rem] bg-[#272727] p-8 lg:p-10">
+              <span className="block font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-white/50 mb-4">Model-agnostic · compatible with</span>
+              <div className="-mx-8 lg:-mx-10">
+                <Marquee items={MODELS} />
+              </div>
             </div>
           </div>
         </section>
 
         {/* COMPARE */}
-        <section id="compare" className="relative min-h-[90vh] flex flex-col justify-center bg-[#ECECEC]">
+        <section id="compare" className="relative flex flex-col justify-center bg-[#ECECEC] py-16 lg:py-24">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20 text-center">
             <h2 className="text-pretty text-[#101010] font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mb-4 max-w-[900px] mx-auto">
               Everything you like about OpenClaw. Nothing you&apos;re worried about.
             </h2>
-            <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px] mx-auto mb-14">
+            <p className="text-pretty text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px] mx-auto mb-14">
               Choose a NEAR AI deployment based on your performance requirements and preferred agent. You get NEAR security no matter what.
             </p>
 
-            <div className="overflow-x-auto w-full text-left border-t border-[#CAC8C8]">
+            <div className="overflow-x-auto w-full text-left">
               <table className="w-full min-w-[560px] table-fixed border-collapse">
                 <thead>
                   <tr className="border-b border-[#CAC8C8]">
-                    <th className="w-1/3 text-center font-mono [font-size:0.75rem] uppercase tracking-widest text-muted font-normal py-6">OpenClaw</th>
+                    <th className="w-1/3 text-left font-mono [font-size:0.75rem] uppercase tracking-widest text-muted font-normal py-6 lg:pl-[75px]">OpenClaw</th>
                     <th className="w-1/3 text-center font-mono [font-size:0.75rem] uppercase tracking-widest text-muted font-normal py-6">Feature</th>
-                    <th className="w-1/3 text-center font-mono [font-size:0.75rem] uppercase tracking-widest text-[#101010] font-normal py-6">IronClaw</th>
+                    <th className="w-1/3 text-right font-mono [font-size:0.75rem] uppercase tracking-widest text-[#101010] font-normal py-6 lg:pr-[75px]">IronClaw</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {COMPARE_ROWS.map((row) => (
-                    <tr key={row.feature} className="border-b border-[#CAC8C8]">
-                      <td className="w-1/3 text-center py-6 [font-size:var(--font-size-body)]">
+                  {COMPARE_ROWS.map((row, i) => (
+                    <tr key={row.feature} className={i !== COMPARE_ROWS.length - 1 ? "border-b border-[#CAC8C8]" : ""}>
+                      <td className="w-1/3 text-left py-6 [font-size:var(--font-size-body)] lg:pl-[75px]">
                         <span className="inline-flex items-center gap-1.5 font-mono text-[#D64545]">
                           <XCircle className="w-4 h-4 shrink-0" />{row.openclaw}
                         </span>
                       </td>
                       <td className="w-1/3 text-center py-6 font-medium text-[#101010] [font-size:var(--font-size-body)]">{row.feature}</td>
-                      <td className="w-1/3 text-center py-6 [font-size:var(--font-size-body)]">
+                      <td className="w-1/3 text-right py-6 [font-size:var(--font-size-body)] lg:pr-[75px]">
                         <span className="inline-flex items-center gap-1.5 font-mono text-[#0072C9]">
                           <CheckCircle2 className="w-4 h-4 shrink-0" />{row.ironclaw}
                         </span>
@@ -589,67 +669,65 @@ export default function IronClawPage() {
         {/* PRICING */}
         <section className="relative bg-[#ECECEC] py-16 lg:py-24">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <div className="rounded-[2rem] bg-[#272727] p-8 lg:p-10">
-              <h2 className="text-pretty text-white font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mb-4">
-                Deploy Secure Agents. No Hardware Required.
-              </h2>
-              <p className="text-pretty font-mono text-white/50 leading-relaxed [font-size:var(--font-size-body)] max-w-[720px] mb-12">
-                Spin up to 5 agents in a Trusted Execution Environment with up to 130M tokens per month — no cloud setup, no infrastructure. Just a simple frontend and you&apos;re live.
-              </p>
+            <h2 className="text-pretty text-[#101010] font-medium leading-[1.15] tracking-tight [font-size:var(--font-size-h2)] mb-4">
+              Deploy Secure Agents. No Hardware Required.
+            </h2>
+            <p className="text-pretty text-muted leading-relaxed [font-size:var(--font-size-body)] max-w-[720px] mb-12">
+              Spin up to 5 agents in a Trusted Execution Environment with up to 130M tokens per month — no cloud setup, no infrastructure. Just a simple frontend and you&apos;re live.
+            </p>
 
-              <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {PRICING_TIERS.map((tier) => (
-                  <div key={tier.name} data-reveal-item className="group relative overflow-hidden rounded-[2rem] bg-[#000] p-8 flex flex-col">
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,#000000_0%,#0A2639_100%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                    <div className="relative z-10 flex flex-col flex-1">
-                      <div className="flex items-center gap-2 mb-6">
-                        <span className="font-mono [font-size:0.75rem] uppercase tracking-widest text-white/50">{tier.name}</span>
-                        {tier.badge && (
-                          <span className="rounded-full bg-[#0072C9] text-white px-2.5 py-0.5 font-mono [font-size:0.625rem] uppercase tracking-widest">{tier.badge}</span>
-                        )}
-                      </div>
-                      <div className="flex items-baseline gap-2 mb-6">
-                        {tier.priceStruck && <span className="text-white/40 line-through [font-size:var(--font-size-h3)]">{tier.priceStruck}</span>}
-                        <span className="font-medium text-white [font-size:var(--font-size-h2)]">{tier.price}</span>
-                        <span className="font-mono text-white/50 [font-size:var(--font-size-body)]">{tier.period}</span>
-                      </div>
-                      <p className="text-pretty font-mono text-white/55 leading-relaxed [font-size:var(--font-size-body)] mb-8">
-                        {tier.description}
-                      </p>
-                      <ul className="flex flex-col gap-3 mb-10">
-                        {tier.bullets.map((bullet) => (
-                          <li key={bullet} className="flex items-start gap-2 font-mono text-white [font-size:var(--font-size-body)]">
-                            <CheckCircle2 className="w-4 h-4 text-[#0072C9] shrink-0 mt-1" />
-                            {bullet}
-                          </li>
-                        ))}
-                      </ul>
-                      <BrandPillLink href="https://agent.near.ai" target="_blank" rel="noopener noreferrer" label="Get started" variant="solid" className="mt-auto w-fit" />
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {PRICING_TIERS.map((tier) => (
+                <div
+                  key={tier.name}
+                  className="rounded-[2rem] border border-[#CAC8C8] hover:border-[#101010]/40 hover:-translate-y-1 transition-all duration-200 p-8 flex flex-col"
+                >
+                  <div className="flex items-center gap-2 mb-6">
+                    <span className="font-mono [font-size:0.75rem] uppercase tracking-widest text-muted">{tier.name}</span>
+                    {tier.badge && (
+                      <span className="rounded-full bg-[#0072C9] text-white px-2.5 py-0.5 font-mono [font-size:0.625rem] uppercase tracking-widest">{tier.badge}</span>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-baseline gap-2 mb-6">
+                    {tier.priceStruck && <span className="text-muted line-through [font-size:var(--font-size-h3)]">{tier.priceStruck}</span>}
+                    <span className="font-medium text-[#101010] [font-size:var(--font-size-h2)]">{tier.price}</span>
+                    <span className="font-mono text-muted [font-size:var(--font-size-body)]">{tier.period}</span>
+                  </div>
+                  <p className="text-pretty font-mono text-muted leading-relaxed [font-size:var(--font-size-body)] mb-8">
+                    {tier.description}
+                  </p>
+                  <ul className="flex flex-col gap-3 mb-10">
+                    {tier.bullets.map((bullet) => (
+                      <li key={bullet} className="flex items-start gap-2 font-mono text-[#101010] [font-size:var(--font-size-body)]">
+                        <CheckCircle2 className="w-4 h-4 text-[#0072C9] shrink-0 mt-1" />
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                  <BrandPillLink href="https://agent.near.ai" target="_blank" rel="noopener noreferrer" label="Get started" variant="solid" className="mt-auto w-fit" />
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* CLOSING CTA */}
-        <section className="relative bg-[linear-gradient(to_bottom,#ECECEC_33%,#575757_100%)]">
+        <section className="relative bg-[linear-gradient(to_bottom,#ECECEC_33%,#575757_100%)] py-16 lg:py-24">
           <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <div className="relative w-full rounded-[2rem] overflow-hidden min-h-[420px] lg:min-h-[480px] flex flex-col bg-gradient-to-b from-[#F3F3F3] via-[#E2E1E1] to-[#FCFCFC]">
+            <div className="relative w-full rounded-[2rem] overflow-hidden min-h-[420px] lg:min-h-[480px] flex flex-col bg-[#ECECEC]">
               <div className="relative z-10 flex flex-col flex-1 items-center justify-center text-center px-6 py-12 md:py-16 lg:py-20 gap-8">
                 <div className="flex flex-col items-center gap-4 max-w-[1280px]">
                   <h2 data-reveal className="text-balance font-medium leading-[1.1] tracking-tight text-[#101010] [font-size:var(--font-size-h2)]" style={{ textWrap: "balance" }}>
                     Deploy an AI agent you can actually trust.
                   </h2>
-                  <p data-reveal className="text-pretty font-mono [font-size:var(--font-size-body)] text-muted leading-[1.9]" style={{ textWrap: "balance" }}>
+                  <p data-reveal className="text-pretty [font-size:var(--font-size-body)] text-muted leading-[1.9]" style={{ textWrap: "balance" }}>
                     Open source. One-click deploy on NEAR AI Cloud. Your secrets never leave the encrypted vault.
                   </p>
                 </div>
                 <div data-reveal className="flex flex-wrap items-center justify-center gap-3">
-                  <BrandPillLink href="https://agent.near.ai" target="_blank" rel="noopener noreferrer" label="Deploy secure agent" variant="solid" />
-                  <PillButton href="https://github.com/nearai/ironclaw" target="_blank" rel="noopener noreferrer" label="Star on GitHub" />
-                  <PillButton href="https://docs.ironclaw.com" target="_blank" rel="noopener noreferrer" label="Docs" />
+                  <BrandPillLink href="https://agent.near.ai" target="_blank" rel="noopener noreferrer" label="Deploy secure agent" variant="solid" icon={Rocket} />
+                  <PillButton href="https://github.com/nearai/ironclaw" target="_blank" rel="noopener noreferrer" label="Star on GitHub" icon={Github} />
+                  <PillButton href="https://docs.ironclaw.com" target="_blank" rel="noopener noreferrer" label="Docs" icon={BookOpen} />
                 </div>
               </div>
             </div>

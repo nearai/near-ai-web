@@ -5,7 +5,7 @@ type Props = {
 
 export default function Marquee({ items, reverse = false }: Props) {
   return (
-    <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+    <div className="relative w-full overflow-hidden">
       <div
         className={`flex w-max gap-4 motion-reduce:animate-none ${
           reverse ? "animate-[marquee_40s_linear_infinite_reverse]" : "animate-[marquee_40s_linear_infinite]"
