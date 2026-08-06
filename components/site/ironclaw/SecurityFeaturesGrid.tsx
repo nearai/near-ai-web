@@ -20,14 +20,22 @@ function FeatureCard({ item }: { item: Feature }) {
   const Icon = ICONS[item.icon];
   return (
     <div
-      data-reveal-item
-      className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-8 flex flex-col gap-4 h-full"
+      className="group relative overflow-hidden rounded-2xl border border-black/[0.08] bg-[#f1f1f1] p-6 flex flex-col gap-3 h-full transition-all"
     >
-      <div className="flex items-center gap-2.5">
-        <Icon className="w-[25px] h-[25px] text-[#4CA7E6] shrink-0" />
-        <h3 className="font-medium leading-[1.15] text-white [font-size:var(--font-size-h3)]">{item.title}</h3>
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(76,167,230,0.25) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          maskImage: "linear-gradient(to bottom left, black 0%, transparent 65%)",
+          WebkitMaskImage: "linear-gradient(to bottom left, black 0%, transparent 65%)",
+        }}
+      />
+      <div className="flex items-start gap-3 relative z-10">
+        <Icon className="w-5 h-5 text-[#4CA7E6] shrink-0" />
+        <h3 className="font-medium leading-[1.15] text-[#101010] [font-size:var(--font-size-body)]">{item.title}</h3>
       </div>
-      <p className="text-pretty font-mono text-white/55 leading-[1.6] [font-size:var(--font-size-body)]">{item.text}</p>
+      <p className="text-pretty font-mono text-muted leading-relaxed [font-size:0.875rem] relative z-10">{item.text}</p>
     </div>
   );
 }
@@ -55,7 +63,7 @@ export default function SecurityFeaturesGrid({ items }: Props) {
       </div>
 
       {/* Desktop — unchanged grid */}
-      <div data-reveal-group className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item) => (
           <FeatureCard key={item.title} item={item} />
         ))}

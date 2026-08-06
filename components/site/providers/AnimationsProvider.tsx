@@ -6,19 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-function equalizePinCards() {
-  const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-pin-card]"));
-  if (cards.length < 2) return;
-  cards.forEach((c) => (c.style.height = "auto"));
-  if (window.innerWidth < 1024) return; // sticky stack only runs on lg:+, keep natural heights below that
-  const maxH = Math.max(...cards.map((c) => c.offsetHeight));
-  cards.forEach((c) => (c.style.height = `${maxH}px`));
-}
-
 export default function AnimationsProvider() {
   useEffect(() => {
-    equalizePinCards();
-
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -233,32 +222,6 @@ export default function AnimationsProvider() {
           },
         });
 
-        const pinCards = gsap.utils.toArray<HTMLElement>("[data-pin-card]");
-
-        if (pinCards.length > 1) {
-          pinCards.forEach((card, i) => {
-            const isLast = i === pinCards.length - 1;
-            const wrapper = card.parentElement as HTMLElement;
-            const offset = parseFloat(wrapper.style.top) || 0;
-            const nextWrapper = !isLast ? (pinCards[i + 1].parentElement as HTMLElement) : null;
-            const nextOffset = nextWrapper ? parseFloat(nextWrapper.style.top) || 0 : offset;
-
-            gsap.to(card, {
-              scale: isLast ? 1 : 0.9 + 0.025 * i,
-              rotationX: 0,
-              transformOrigin: "center center",
-              ease: "none",
-              scrollTrigger: {
-                trigger: wrapper,
-                start: `top ${offset}`,
-                endTrigger: nextWrapper || wrapper,
-                end: nextWrapper ? `top ${nextOffset}` : `bottom ${offset}`,
-                scrub: true,
-              },
-            });
-          });
-        }
-
       });
 
       return () => ctx.revert();
@@ -277,7 +240,6 @@ export default function AnimationsProvider() {
     equalizeStackCards();
     const ro = new ResizeObserver(() => {
       equalizeStackCards();
-      equalizePinCards();
       ScrollTrigger.refresh();
     });
     ro.observe(document.documentElement);
