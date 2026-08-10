@@ -11,7 +11,6 @@ import SiteHeader from "@/components/site/SiteHeader";
 import AnimationsProvider from "@/components/site/providers/AnimationsProvider";
 import GridLines from "@/components/site/v2/GridLines";
 import UseCaseFilter from "@/components/site/ironclaw/UseCaseFilter";
-import Marquee from "@/components/site/ironclaw/Marquee";
 import IntegrationMarquee, { type Integration } from "@/components/site/ironclaw/IntegrationMarquee";
 import SecurityFeaturesGrid from "@/components/site/ironclaw/SecurityFeaturesGrid";
 import OpenClawChat from "@/components/site/ironclaw/OpenClawChat";
@@ -215,7 +214,10 @@ const HOSTED_CHIPS = ["Rust", "Wasm Sandbox", "Encrypted Vault", "CVM", "Endpoin
 
 const VAULT_ROWS = ["API_KEY", "DB_PASS", "BEARER_TOKEN"];
 
-const MODELS = ["Anthropic", "OpenAI", "GitHub Copilot", "Google Gemini", "MiniMax", "Mistral", "Ollama", "OpenRouter", "Together AI", "Fireworks AI"];
+const MODELS_ROWS = [
+  ["Anthropic", "OpenAI", "GitHub Copilot", "Google Gemini", "MiniMax"],
+  ["Mistral", "Ollama", "OpenRouter", "Together AI", "Fireworks AI"],
+];
 
 const COMPARE_ROWS = [
   { feature: "Language", openclaw: "TypeScript", ironclaw: "Rust" },
@@ -615,13 +617,24 @@ export default async function IronClawPage() {
 
         {/* MODEL-AGNOSTIC */}
         <section className="relative bg-[#ECECEC] py-16 lg:py-24">
-          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20">
-            <div className="rounded-[2rem] bg-[#272727] p-8 lg:p-10">
-              <span className="block font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-white/50 mb-4">Model-agnostic · compatible with</span>
-              <div className="-mx-8 lg:-mx-10">
-                <Marquee items={MODELS} />
+          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20 mb-8">
+            <span className="font-mono [font-size:0.75rem] uppercase tracking-[0.15em] text-muted">Model-agnostic · compatible with</span>
+          </div>
+          <div className="mx-auto w-full max-w-[1920px] px-5 sm:px-10 lg:px-20 flex flex-col gap-4">
+            {MODELS_ROWS.map((row, i) => (
+              <div key={i} className="relative w-full h-12 overflow-hidden">
+                <div className="flex flex-wrap gap-4">
+                  {Array(8).fill(row).flat().map((item, j) => (
+                    <div
+                      key={`${item}-${j}`}
+                      className="flex-1 flex items-center justify-center rounded-full border border-[#CAC8C8] bg-[#ECECEC] px-6 py-3 text-[0.75rem] uppercase tracking-widest text-muted whitespace-nowrap"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 
