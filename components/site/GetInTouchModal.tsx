@@ -11,7 +11,7 @@ import {
 } from "@near/cms-core/components/ui/dialog";
 import GetInTouchForm from "@/components/site/GetInTouchForm";
 
-export default function GetInTouchModal() {
+export default function GetInTouchModal({ dark = true }: { dark?: boolean }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [formKey, setFormKey] = useState(0);
@@ -27,7 +27,13 @@ export default function GetInTouchModal() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button className="border border-white/40 rounded-full px-4 py-1.5 text-white/80 hover:text-white hover:border-white/70 transition-colors cursor-pointer">
+        <button
+          className={
+            dark
+              ? "border border-white/40 rounded-full px-4 py-1.5 text-white/80 hover:text-white hover:border-white/70 transition-colors cursor-pointer"
+              : "border border-[#101010]/30 rounded-full px-4 py-1.5 text-[#101010]/80 hover:text-[#101010] hover:border-[#101010]/60 transition-colors cursor-pointer"
+          }
+        >
           GET IN TOUCH
         </button>
       </DialogTrigger>
